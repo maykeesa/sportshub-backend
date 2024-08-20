@@ -6,8 +6,11 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
@@ -41,5 +44,27 @@ class UsuarioController {
         }
 
         return ResponseEntity.notFound().build()
+    }
+
+    @PostMapping()
+    fun save(usuario: Usuario): ResponseEntity<Usuario>{
+        var usuario: Usuario = this.usuarioRep.save(usuario)
+
+        return ResponseEntity.ok(usuario)
+    }
+
+    @DeleteMapping
+    fun delete(@PathVariable id: UUID): ResponseEntity<Void>{
+        this.usuarioRep.deleteById(id)
+
+        return ResponseEntity.noContent().build()
+    }
+
+    
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: UUID, usuario: Usuario): ResponseEntity<Usuario>{
+        var usuario: Usuario = this.usuarioRep.save(usuario)
+
+        return ResponseEntity.ok(usuario)
     }
 }
