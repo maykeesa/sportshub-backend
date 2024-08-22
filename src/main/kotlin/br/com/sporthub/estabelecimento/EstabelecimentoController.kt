@@ -55,7 +55,7 @@ class EstabelecimentoController {
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: UUID, @RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Estabelecimento>{
-        val estabelecimentoOpt: Optional<Estabelecimento> = estabelecimentoService.atualizarEstabelecimento(id, estabelecimentoForm)
+        val estabelecimentoOpt: Optional<Estabelecimento> = estabelecimentoService.atualizarEntidade(id, estabelecimentoForm)
 
         if(!estabelecimentoOpt.isPresent){
             return  ResponseEntity.notFound().build()

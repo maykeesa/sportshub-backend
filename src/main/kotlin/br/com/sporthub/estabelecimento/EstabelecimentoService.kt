@@ -11,10 +11,5 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class EstabelecimentoService(repository: EstabelecimentoRepository) : GenericService<Estabelecimento>(repository) {
-
-    fun atualizarEstabelecimento(id: UUID, estabelecimentoForm: EstabelecimentoForm): Optional<Estabelecimento> {
-        return atualizarEntidade(id, estabelecimentoForm)
-    }
-
+class EstabelecimentoService(repository: EstabelecimentoRepository) : GenericService<Estabelecimento>(Estabelecimento::class.java) {
 }

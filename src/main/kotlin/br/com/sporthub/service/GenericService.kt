@@ -1,26 +1,29 @@
 package br.com.sporthub.service
 
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import jakarta.transaction.Transactional
 import org.springframework.beans.BeanUtils
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Service
 import java.util.*
 
 
-open class GenericService<T>(
-    private val repository: JpaRepository<T, UUID>
-) where T : Any {
+open class GenericService<T : Any>(private val entityType: Class<T>) {
 
-    fun <F : Any> atualizarEntidade(id: UUID, form: F, excludeProperties: Array<String> = arrayOf("id")): Optional<T> {
-        val entidadeOpt: Optional<T> = repository.findById(id)
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
 
-        if (entidadeOpt.isPresent) {
-            val entidade = entidadeOpt.get()
-            // Use the spread operator (*) to pass the array as vararg
+    @Transactional
+    open fun <F : Any> atualizarEntidade(id: UUID, form: F, excludeProperties: Array<String> = arrayOf("id")): Optional<T> {
+        val entidade = entityManager.find(entityType, id)
+
+        return if (entidade != null) {
             BeanUtils.copyProperties(form, entidade, *excludeProperties)
-
-            return Optional.of(repository.save(entidade))
+            entityManager.merge(entidade)
+            Optional.of(entidade)
+        } else {
+            Optional.empty()
         }
-
-        return Optional.empty()
     }
 }
