@@ -1,5 +1,8 @@
 package br.com.sporthub.usuario
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import br.com.sporthub.usuario.form.UsuarioForm
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
@@ -23,7 +26,12 @@ class UsuarioController {
     private lateinit var usuarioService: UsuarioService
 
     @GetMapping()
-    fun getAll(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
+    @Operation(summary = "Listar todos os usuários")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
+        ApiResponse(responseCode = "204", description = "Não há usuários cadastrados")
+    ])
+    fun getAllUsuarios(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Usuario>>{
         var usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
 
@@ -31,6 +39,11 @@ class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um usuário pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna um usuário"),
+        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
         var usuario: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
@@ -41,35 +54,54 @@ class UsuarioController {
         return  ResponseEntity.notFound().build()
     }
 
+
     @PostMapping()
+    @Operation(summary = "Salvar um usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o usuário salvo"),
+        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    ])
     fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
         var usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
+
+        if (usuario == null){
+            return ResponseEntity.notFound().build()
+        }
 
         return ResponseEntity.ok(usuario)
     }
 
-    @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
-        val usuarioOpt: Optional<Usuario> = usuarioService.atualizarUsuario(id, usuarioForm)
-
-        if(usuarioOpt.isPresent){
-            var usuario = usuarioRep.save(usuarioOpt.get())
-            return ResponseEntity.ok(usuario)
-        }
-
-        return  ResponseEntity.notFound().build()
-
-    }
-
     @DeleteMapping
-    fun delete(@PathVariable id: String): ResponseEntity<Any>{
-        var usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
+    @Operation(summary = "Deletar um usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
+        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    ])
+    fun deleteUsuario(@PathVariable id: UUID): ResponseEntity<Void>{
+        this.usuarioRep.deleteById(id)
 
-        if(usuarioOpt.isPresent){
-            this.usuarioRep.delete(usuarioOpt.get())
-            return ResponseEntity.ok().build()
+        if(this.usuarioRep.findById(id).isPresent){
+            return ResponseEntity.notFound().build()
         }
 
         return ResponseEntity.noContent().build()
     }
+
+    
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o usuário atualizado"),
+        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    ])
+    fun updateUsuario(@PathVariable id: UUID, usuario: Usuario): ResponseEntity<Usuario>{
+        var usuario: Usuario = this.usuarioRep.save(usuario)
+
+        if (usuario == null){
+            return ResponseEntity.notFound().build()
+        }
+
+        return ResponseEntity.ok(usuario)
+    }
+
 }
