@@ -6,11 +6,13 @@ import java.util.*
 
 @Entity
 @Table(name = "esportes")
-class Esporte(
+data class Esporte(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,
     var nome: String,
     var time: Boolean,
     var dupla: Boolean,
-) {}
+) {
+
+}

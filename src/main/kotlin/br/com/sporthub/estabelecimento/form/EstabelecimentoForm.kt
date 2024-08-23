@@ -1,12 +1,7 @@
 package br.com.sporthub.estabelecimento.form
 
-
-
 import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
-import java.time.LocalDate
 
 class EstabelecimentoForm(
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")

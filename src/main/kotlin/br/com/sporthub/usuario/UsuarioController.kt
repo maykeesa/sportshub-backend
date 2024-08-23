@@ -1,9 +1,9 @@
 package br.com.sporthub.usuario
 
+import br.com.sporthub.usuario.form.UsuarioForm
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import br.com.sporthub.usuario.form.UsuarioForm
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -22,10 +21,8 @@ class UsuarioController {
 
     @Autowired
     private lateinit var usuarioRep: UsuarioRepository
-    @Autowired
-    private lateinit var usuarioService: UsuarioService
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "Listar todos os usuários")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
@@ -55,7 +52,7 @@ class UsuarioController {
     }
 
 
-    @PostMapping()
+    @PostMapping
     @Operation(summary = "Salvar um usuário")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna o usuário salvo"),
@@ -64,44 +61,44 @@ class UsuarioController {
     fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
         var usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
 
-        if (usuario == null){
-            return ResponseEntity.notFound().build()
-        }
-
         return ResponseEntity.ok(usuario)
     }
 
-    @DeleteMapping
-    @Operation(summary = "Deletar um usuário")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
-        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    ])
-    fun deleteUsuario(@PathVariable id: UUID): ResponseEntity<Void>{
-        this.usuarioRep.deleteById(id)
-
-        if(this.usuarioRep.findById(id).isPresent){
-            return ResponseEntity.notFound().build()
-        }
-
-        return ResponseEntity.noContent().build()
-    }
-
-    
+     // Isso não ta fazendo nd
+    /*
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um usuário")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna o usuário atualizado"),
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
-    fun updateUsuario(@PathVariable id: UUID, usuario: Usuario): ResponseEntity<Usuario>{
-        var usuario: Usuario = this.usuarioRep.save(usuario)
+    fun update(@PathVariable id: String, usuarioForm: UsuarioForm: UsuarioForm): ResponseEntity<Usuario>{
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
-        if (usuario == null){
+        if (usuarioOpt.isEmpty){
             return ResponseEntity.notFound().build()
         }
 
+        var usuario: Usuario = this.usuarioRep.save(usuario)
+
         return ResponseEntity.ok(usuario)
     }
+     */
 
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
+        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    ])
+    fun delete(@PathVariable id: String): ResponseEntity<Void>{
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
+
+        if(usuarioOpt.isEmpty){
+            return ResponseEntity.notFound().build()
+        }
+
+        this.usuarioRep.deleteById(UUID.fromString(id))
+        return ResponseEntity.noContent().build()
+    }
 }

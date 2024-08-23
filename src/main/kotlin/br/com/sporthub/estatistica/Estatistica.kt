@@ -10,7 +10,7 @@ import jakarta.validation.constraints.DecimalMin
 
 @Entity
 @Table(name = "estatisticas")
-class Estatistica (
+data class Estatistica (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,

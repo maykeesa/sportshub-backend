@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 @Table(name = "grupos")
-class Grupo (
+data class Grupo (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,

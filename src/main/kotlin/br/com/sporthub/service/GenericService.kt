@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.transaction.Transactional
 import org.springframework.beans.BeanUtils
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Service
 import java.util.*
-
 
 open class GenericService<T : Any>(private val entityType: Class<T>) {
 
