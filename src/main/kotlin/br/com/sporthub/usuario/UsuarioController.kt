@@ -3,19 +3,17 @@ package br.com.sporthub.usuario
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import br.com.sporthub.usuario.form.UsuarioForm
+import jakarta.validation.Valid
+import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
@@ -24,6 +22,8 @@ class UsuarioController {
 
     @Autowired
     private lateinit var usuarioRep: UsuarioRepository
+    @Autowired
+    private lateinit var usuarioService: UsuarioService
 
     @GetMapping()
     @Operation(summary = "Listar todos os usuários")
@@ -33,14 +33,9 @@ class UsuarioController {
     ])
     fun getAllUsuarios(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Usuario>>{
-
         var usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
 
-        if(!usuario.isEmpty){
-            return ResponseEntity.ok(usuario);
-        }
-
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(usuario)
     }
 
     @GetMapping("/{id}")
@@ -49,14 +44,14 @@ class UsuarioController {
         ApiResponse(responseCode = "200", description = "Retorna um usuário"),
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
-    fun getOneUsuario(@PathVariable id: UUID): ResponseEntity<Usuario>{
-        var usuario: Optional<Usuario> = this.usuarioRep.findById(id)
+    fun getOne(@PathVariable id: String): ResponseEntity<Any>{
+        var usuario: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
         if(usuario.isPresent){
             return ResponseEntity.ok(usuario.get())
         }
 
-        return ResponseEntity.notFound().build()
+        return  ResponseEntity.notFound().build()
     }
 
 
@@ -66,8 +61,8 @@ class UsuarioController {
         ApiResponse(responseCode = "200", description = "Retorna o usuário salvo"),
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
-    fun saveUsuario(usuario: Usuario): ResponseEntity<Usuario>{
-        var usuario: Usuario = this.usuarioRep.save(usuario)
+    fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
+        var usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
 
         if (usuario == null){
             return ResponseEntity.notFound().build()
@@ -108,4 +103,5 @@ class UsuarioController {
 
         return ResponseEntity.ok(usuario)
     }
+
 }
