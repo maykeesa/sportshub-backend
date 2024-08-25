@@ -38,28 +38,25 @@ class EsporteController {
     fun getOne(id: UUID): ResponseEntity<Esporte> {
         var esporte: Optional<Esporte> = this.esporteRep.findById(id)
 
-        if (!esporte.isPresent) {
+        if (esporte.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
         return ResponseEntity.ok(esporte.get())
     }
 
-    // Corrigir, utilizar o Form
-    @PostMapping()
+    @PostMapping
     fun save(esporteForm: EsporteForm): ResponseEntity<Esporte> {
         var esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
 
         return ResponseEntity.ok(esporte)
     }
 
-
-    // Não ta fazendo nd
     @PutMapping("/{id}")
     fun update(id: UUID, esporteForm: EsporteForm): ResponseEntity<Esporte> {
         var esporte: Optional<Esporte> = this.esporteService.atualizarEntidade(id, esporteForm)
 
-        if (!esporte.isPresent) {
+        if (esporte.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
