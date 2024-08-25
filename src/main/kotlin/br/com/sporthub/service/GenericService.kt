@@ -15,12 +15,13 @@ open class GenericService<T : Any>(private val entityType: Class<T>) {
     open fun <F : Any> atualizarEntidade(id: UUID, form: F, excludeProperties: Array<String> = arrayOf("id")): Optional<T> {
         val entidade = entityManager.find(entityType, id)
 
-        return if (entidade != null) {
+        if (!entidade.equals(null)) {
             BeanUtils.copyProperties(form, entidade, *excludeProperties)
             entityManager.merge(entidade)
-            Optional.of(entidade)
-        } else {
-            Optional.empty()
+
+            return Optional.of(entidade)
         }
+
+        return Optional.empty()
     }
 }
