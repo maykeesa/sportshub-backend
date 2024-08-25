@@ -1,6 +1,5 @@
 package br.com.sporthub.esporte
 
-import br.com.sporthub.quadra.Quadra
 import jakarta.persistence.*
 import java.util.*
 
