@@ -3,10 +3,10 @@ package br.com.sporthub.estatistica
 import br.com.sporthub.grupo.Grupo
 import br.com.sporthub.usuario.Usuario
 import jakarta.persistence.*
-import java.time.LocalTime
-import java.util.UUID
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
+import java.time.LocalTime
+import java.util.*
 
 @Entity
 @Table(name = "estatisticas")
