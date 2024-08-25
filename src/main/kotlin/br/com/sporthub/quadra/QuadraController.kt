@@ -1,6 +1,5 @@
 package br.com.sporthub.quadra
 
-import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
 import br.com.sporthub.quadra.form.QuadraForm
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
@@ -25,23 +24,24 @@ class QuadraController {
     fun getAll(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable
     ): ResponseEntity<List<Quadra>> {
-        var quadras: List<Quadra> = this.quadraRep.findAll()
+        val quadras: List<Quadra> = this.quadraRep.findAll()
 
         return ResponseEntity.ok(quadras)
     }
 
     @GetMapping("/{id}")
-    fun getOne(@PathVariable id: String): ResponseEntity<Any> {
-        var quadra: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
+    fun getOne(@PathVariable id: String): ResponseEntity<Quadra> {
+        val quadra: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
+
         if (quadra.isPresent) {
             return ResponseEntity.ok(quadra.get())
         }
         return ResponseEntity.notFound().build()
     }
 
-    @PostMapping("/{id}")
-    fun save(@PathVariable id: UUID, @RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Quadra> {
-        var quadra: Quadra = this.quadraRep.save(ModelMapper().map(quadraForm, Quadra::class.java))
+    @PostMapping
+    fun save(@RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Quadra> {
+        val quadra: Quadra = this.quadraRep.save(ModelMapper().map(quadraForm, Quadra::class.java))
 
         return ResponseEntity.ok(quadra)
     }
@@ -54,7 +54,7 @@ class QuadraController {
             return ResponseEntity.notFound().build()
         }
 
-        var quadra = quadraRep.save(quadraOpt.get())
+        val quadra = quadraRep.save(quadraOpt.get())
         return ResponseEntity.ok(quadra)
     }
 
@@ -69,8 +69,4 @@ class QuadraController {
         quadraRep.delete(quadraOpt.get())
         return ResponseEntity.ok().build()
     }
-
-
-
-
 }
