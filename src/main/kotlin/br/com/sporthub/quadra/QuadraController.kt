@@ -22,8 +22,7 @@ class QuadraController {
 
     @GetMapping
     fun getAll(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
-        page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<List<Quadra>> {
+        page = 0, size = 10) paginacao: Pageable): ResponseEntity<List<Quadra>> {
         val quadras: List<Quadra> = this.quadraRep.findAll()
 
         return ResponseEntity.ok(quadras)
@@ -47,20 +46,20 @@ class QuadraController {
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Quadra> {
-        val quadraOpt: Optional<Quadra> = quadraService.atualizarEntidade(id, quadraForm)
+    fun update(@PathVariable id: String, @RequestBody quadraForm: Map<String, Any>): ResponseEntity<Any> {
+        val quadraOpt: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
 
         if (quadraOpt.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
-        val quadra = quadraRep.save(quadraOpt.get())
-        return ResponseEntity.ok(quadra)
+        val quadraAtualizada = quadraService.atualizarEntidade(quadraOpt.get(), quadraForm)
+        return ResponseEntity.ok(quadraAtualizada)
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID): ResponseEntity<Any> {
-        val quadraOpt: Optional<Quadra> = quadraRep.findById(id)
+    fun delete(@PathVariable id: String): ResponseEntity<Any> {
+        val quadraOpt: Optional<Quadra> = quadraRep.findById(UUID.fromString(id))
 
         if (quadraOpt.isEmpty) {
             return ResponseEntity.notFound().build()

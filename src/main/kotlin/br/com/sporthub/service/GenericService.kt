@@ -3,25 +3,21 @@ package br.com.sporthub.service
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.transaction.Transactional
-import org.springframework.beans.BeanUtils
-import java.util.*
 
-open class GenericService<T : Any>(private val entityType: Class<T>) {
+open class GenericService<T: Any>(private val entityType: Class<T>) {
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 
     @Transactional
-    open fun <F : Any> atualizarEntidade(id: UUID, form: F, excludeProperties: Array<String> = arrayOf("id")): Optional<T> {
-        val entidade = entityManager.find(entityType, id)
-
-        if (!entidade.equals(null)) {
-            BeanUtils.copyProperties(form, entidade, *excludeProperties)
-            entityManager.merge(entidade)
-
-            return Optional.of(entidade)
+    open fun atualizarEntidade(entidade: Any, form: Map<String, Any>): Any {
+        form.forEach{ (key, value) ->
+            val field = entidade::class.java.getDeclaredField(key)
+            field.isAccessible = true
+            field.set(entidade, value)
         }
 
-        return Optional.empty()
+        entityManager.merge(entidade)
+        return entidade
     }
 }

@@ -1,10 +1,6 @@
 package br.com.sporthub.esporte
 
 import br.com.sporthub.esporte.form.EsporteForm
-import br.com.sporthub.usuario.Usuario
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -26,46 +22,46 @@ class EsporteController {
     private lateinit var esporteService: EsporteService
 
     @GetMapping
-    fun getAll(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
+    fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable
     ): ResponseEntity<Page<Esporte>> {
-        var esporte: Page<Esporte> = this.esporteRep.findAll(paginacao)
+        val esporte: Page<Esporte> = this.esporteRep.findAll(paginacao)
 
         return ResponseEntity.ok(esporte)
     }
 
     @GetMapping("/{id}")
-    fun getOne(id: UUID): ResponseEntity<Esporte> {
-        var esporte: Optional<Esporte> = this.esporteRep.findById(id)
+    fun getOne(@PathVariable id: String): ResponseEntity<Esporte> {
+        val esporteOpt: Optional<Esporte> = this.esporteRep.findById(UUID.fromString(id))
 
-        if (esporte.isEmpty) {
+        if (esporteOpt.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
-        return ResponseEntity.ok(esporte.get())
+        return ResponseEntity.ok(esporteOpt.get())
     }
 
     @PostMapping
     fun save(esporteForm: EsporteForm): ResponseEntity<Esporte> {
-        var esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
+        val esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
 
         return ResponseEntity.ok(esporte)
     }
 
     @PutMapping("/{id}")
-    fun update(id: UUID, esporteForm: EsporteForm): ResponseEntity<Esporte> {
-        var esporte: Optional<Esporte> = this.esporteService.atualizarEntidade(id, esporteForm)
+    fun update(@PathVariable id: String, esporteForm: Map<String, Any>): ResponseEntity<Any> {
+        val esporteOpt: Optional<Esporte> = this.esporteRep.findById(UUID.fromString(id))
 
-        if (esporte.isEmpty) {
+        if (esporteOpt.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
-        return ResponseEntity.ok(esporte.get())
+        val esporteAtualizado = this.esporteService.atualizarEntidade(esporteOpt.get(), esporteForm)
+        return ResponseEntity.ok(esporteAtualizado)
     }
 
-
     @DeleteMapping("/{id}")
-    fun delete(id: String): ResponseEntity<Esporte> {
+    fun delete(@PathVariable id: String): ResponseEntity<Esporte> {
         val esporteOpt: Optional<Esporte> = this.esporteRep.findById(UUID.fromString(id))
 
         if(esporteOpt.isEmpty){
