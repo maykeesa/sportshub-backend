@@ -22,12 +22,8 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handlerIllegalArgument(ex: IllegalArgumentException): ResponseEntity<Any> {
-        val mapDto = HashMap<String, String?>()
-        val fieldError = ex.message
-
-        if(fieldError.equals("Invalid UUID string: 1")){
-            mapDto.put("error", "O id passado não é um UUID.")
-        }
+        val mapDto = HashMap<String, String>()
+        mapDto.put("error", "O id passado não é um UUID.")
 
         return ResponseEntity.badRequest().body(mapDto)
     }

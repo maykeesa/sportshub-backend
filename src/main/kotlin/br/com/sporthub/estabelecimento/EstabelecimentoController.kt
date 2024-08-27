@@ -22,16 +22,16 @@ class EstabelecimentoController {
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
 
     @GetMapping
-    fun getAll(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
+    fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Estabelecimento>> {
-        var estabelecimentos: Page<Estabelecimento> = this.estabelecimentoRep.findAll(paginacao)
+        val estabelecimentos: Page<Estabelecimento> = this.estabelecimentoRep.findAll(paginacao)
 
         return ResponseEntity.ok(estabelecimentos)
     }
 
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
-        var estabelecimento: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
+        val estabelecimento: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
         if(estabelecimento.isPresent){
             return ResponseEntity.ok(estabelecimento.get())
@@ -42,27 +42,26 @@ class EstabelecimentoController {
 
     @PostMapping
     fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Estabelecimento>{
-        var estabelecimento: Estabelecimento = this.estabelecimentoRep.save(ModelMapper().map(estabelecimentoForm, Estabelecimento::class.java))
+        val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(ModelMapper().map(estabelecimentoForm, Estabelecimento::class.java))
 
         return ResponseEntity.ok(estabelecimento)
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Estabelecimento>{
-        val estabelecimentoOpt: Optional<Estabelecimento> = estabelecimentoService.atualizarEntidade(id, estabelecimentoForm)
+    fun update(@PathVariable id: String, @RequestBody @Valid estabelecimentoForm: Map<String, Any>): ResponseEntity<Any>{
+        val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
         if(estabelecimentoOpt.isEmpty){
             return  ResponseEntity.notFound().build()
         }
 
-        var estabelecimento = estabelecimentoRep.save(estabelecimentoOpt.get())
-        return ResponseEntity.ok(estabelecimento)
-
+        val estabelecimentoAtualizado = this.estabelecimentoService.atualizarEntidade(estabelecimentoOpt.get(), estabelecimentoForm)
+        return ResponseEntity.ok(estabelecimentoAtualizado)
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Estabelecimento>{
-        var estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
+        val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
         if(estabelecimentoOpt.isEmpty){
             return ResponseEntity.notFound().build()
@@ -70,7 +69,6 @@ class EstabelecimentoController {
 
         this.estabelecimentoRep.delete(estabelecimentoOpt.get())
         return ResponseEntity.ok().build()
-
     }
 
 }

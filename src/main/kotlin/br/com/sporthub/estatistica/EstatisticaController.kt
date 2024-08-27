@@ -19,20 +19,19 @@ class EstatisticaController {
     @Autowired
     private lateinit var estatisticaService: EstatisticaService
     @Autowired
-    private lateinit var estatisticaRepository: EstatisticaRepository
+    private lateinit var estatisticaRep: EstatisticaRepository
 
     @GetMapping
     fun getAll(@PageableDefault(sort = ["id"], direction = Sort.Direction.ASC,
-        page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<Page<Estatistica>> {
-        val estatisticas: Page<Estatistica> = this.estatisticaRepository.findAll(paginacao)
+        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Estatistica>> {
+        val estatisticas: Page<Estatistica> = this.estatisticaRep.findAll(paginacao)
 
         return ResponseEntity.ok(estatisticas)
     }
 
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: String): ResponseEntity<Any> {
-        val estatistica: Optional<Estatistica> = this.estatisticaRepository.findById(UUID.fromString(id))
+        val estatistica: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
         if (estatistica.isEmpty) {
             return ResponseEntity.notFound().build()
@@ -41,36 +40,34 @@ class EstatisticaController {
         return ResponseEntity.ok(estatistica.get())
     }
 
-    @PostMapping()
+    @PostMapping
     fun save(@RequestBody @Valid estatisticaForm: EstatisticaForm): ResponseEntity<Estatistica> {
-        val estatistica: Estatistica = this.estatisticaRepository.save(ModelMapper().map(estatisticaForm, Estatistica::class.java))
+        val estatistica: Estatistica = this.estatisticaRep.save(ModelMapper().map(estatisticaForm, Estatistica::class.java))
 
         return ResponseEntity.ok(estatistica)
     }
 
-    /*
     @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, estatistica: Estatistica): ResponseEntity<Estatistica> {
-        val estatisticaOpt: Optional<Estatistica> = estatisticaService.atualizarEntidade(id, estatistica)
+    fun update(@PathVariable id: String, estatisticaForm: Map<String, Any>): ResponseEntity<Any> {
+        val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
         if (estatisticaOpt.isEmpty) {
             return ResponseEntity.notFound().build()
         }
 
-        var estatistica = estatisticaRepository.save(estatisticaOpt.get())
-        return ResponseEntity.ok(estatistica)
+        val estatisticaAtualizada = this.estatisticaService.atualizarEntidade(estatisticaOpt.get(), estatisticaForm)
+        return ResponseEntity.ok(estatisticaAtualizada)
     }
-     */
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Estatistica> {
-        val estatisticaOpt: Optional<Estatistica> = this.estatisticaRepository.findById(UUID.fromString(id))
+        val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
         if (!estatisticaOpt.isPresent) {
             return ResponseEntity.notFound().build()
         }
 
-        this.estatisticaRepository.delete(estatisticaOpt.get())
+        this.estatisticaRep.delete(estatisticaOpt.get())
         return ResponseEntity.ok().build()
     }
 

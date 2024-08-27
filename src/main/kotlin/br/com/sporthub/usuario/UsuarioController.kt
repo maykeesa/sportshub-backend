@@ -20,6 +20,8 @@ import java.util.*
 class UsuarioController {
 
     @Autowired
+    private lateinit var usuarioService: UsuarioService
+    @Autowired
     private lateinit var usuarioRep: UsuarioRepository
 
     @GetMapping
@@ -28,9 +30,9 @@ class UsuarioController {
         ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
         ApiResponse(responseCode = "204", description = "Não há usuários cadastrados")
     ])
-    fun getAllUsuarios(@PageableDefault(sort = arrayOf("nome"), direction = Sort.Direction.ASC,
+    fun getAllUsuarios(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Usuario>>{
-        var usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
+        val usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
 
         return ResponseEntity.ok(usuario)
     }
@@ -42,7 +44,7 @@ class UsuarioController {
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
-        var usuario: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
+        val usuario: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
         if(usuario.isPresent){
             return ResponseEntity.ok(usuario.get())
@@ -59,31 +61,27 @@ class UsuarioController {
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
     fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
-        var usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
+        val usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
 
         return ResponseEntity.ok(usuario)
     }
 
-     // Isso não ta fazendo nd
-    /*
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um usuário")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna o usuário atualizado"),
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
-    fun update(@PathVariable id: String, usuarioForm: UsuarioForm: UsuarioForm): ResponseEntity<Usuario>{
+    fun update(@PathVariable id: String, @RequestBody usuarioForm: Map<String,Any>): ResponseEntity<Any>{
         val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
         if (usuarioOpt.isEmpty){
             return ResponseEntity.notFound().build()
         }
 
-        var usuario: Usuario = this.usuarioRep.save(usuario)
-
-        return ResponseEntity.ok(usuario)
+        val usuarioAtualizado = this.usuarioService.atualizarEntidade(usuarioOpt.get(), usuarioForm)
+        return ResponseEntity.ok(usuarioAtualizado)
     }
-     */
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar um usuário")
