@@ -2,7 +2,9 @@ package br.com.sporthub.usuario
 
 import br.com.sporthub.grupo.Grupo
 import jakarta.persistence.*
+import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -19,6 +21,8 @@ data class Usuario(
     var dataNascimento: LocalDate,
     var genero: String,
     var telefone: String,
+    @CreationTimestamp
+    var dataCriacao: LocalDateTime,
 
     @ManyToMany(mappedBy = "usuario")
     var grupos: List<Grupo>
