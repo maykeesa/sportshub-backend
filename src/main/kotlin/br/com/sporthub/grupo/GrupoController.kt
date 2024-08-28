@@ -63,7 +63,7 @@ class GrupoController {
     fun save(@RequestBody @Valid grupoForm: GrupoForm): ResponseEntity<Grupo>{
         val grupo: Grupo = this.grupoRep.save(ModelMapper().map(grupoForm, Grupo::class.java))
 
-        return ResponseEntity.ok(grupo)
+        return ResponseEntity.status(201).body(grupo)
     }
 
     @PutMapping("/{id}")
@@ -80,7 +80,7 @@ class GrupoController {
         }
 
         val grupoAtualizado = this.grupoService.atualizarEntidade(grupoOpt.get(), grupoForm)
-        return ResponseEntity.ok(grupoAtualizado)
+        return ResponseEntity.status(202).body(grupoAtualizado)
     }
 
     @DeleteMapping("/{id}")
@@ -97,6 +97,6 @@ class GrupoController {
         }
 
         this.grupoRep.deleteById(UUID.fromString(id))
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 }

@@ -44,7 +44,7 @@ class EstatisticaController {
     fun save(@RequestBody @Valid estatisticaForm: EstatisticaForm): ResponseEntity<Estatistica> {
         val estatistica: Estatistica = this.estatisticaRep.save(ModelMapper().map(estatisticaForm, Estatistica::class.java))
 
-        return ResponseEntity.ok(estatistica)
+        return ResponseEntity.status(201).body(estatistica)
     }
 
     @PutMapping("/{id}")
@@ -56,7 +56,7 @@ class EstatisticaController {
         }
 
         val estatisticaAtualizada = this.estatisticaService.atualizarEntidade(estatisticaOpt.get(), estatisticaForm)
-        return ResponseEntity.ok(estatisticaAtualizada)
+        return ResponseEntity.status(202).body(estatisticaAtualizada)
     }
 
     @DeleteMapping("/{id}")

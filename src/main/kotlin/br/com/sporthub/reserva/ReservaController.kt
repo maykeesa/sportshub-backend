@@ -63,7 +63,7 @@ class ReservaController {
     fun save(@RequestBody @Valid reservaForm: ReservaForm): ResponseEntity<Reserva> {
         val reserva: Reserva = this.reservaRep.save(ModelMapper().map(reservaForm, Reserva::class.java))
 
-        return ResponseEntity.ok(reserva)
+        return ResponseEntity.status(201).body(reserva)
     }
 
     @PutMapping("/{id}")
@@ -80,7 +80,7 @@ class ReservaController {
         }
 
         val reservaAtualizado = this.reservaService.atualizarEntidade(reservaOpt.get(), reservaForm)
-        return ResponseEntity.ok(reservaAtualizado)
+        return ResponseEntity.status(202).body(reservaAtualizado)
     }
 
     @DeleteMapping("/{id}")
@@ -97,6 +97,6 @@ class ReservaController {
         }
 
         this.reservaRep.deleteById(UUID.fromString(id))
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 }

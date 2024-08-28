@@ -45,7 +45,7 @@ class EsporteController {
     fun save(esporteForm: EsporteForm): ResponseEntity<Esporte> {
         val esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
 
-        return ResponseEntity.ok(esporte)
+        return ResponseEntity.status(201).body(esporte)
     }
 
     @PutMapping("/{id}")
@@ -57,7 +57,7 @@ class EsporteController {
         }
 
         val esporteAtualizado = this.esporteService.atualizarEntidade(esporteOpt.get(), esporteForm)
-        return ResponseEntity.ok(esporteAtualizado)
+        return ResponseEntity.status(202).body(esporteAtualizado)
     }
 
     @DeleteMapping("/{id}")
@@ -69,6 +69,6 @@ class EsporteController {
         }
 
         this.esporteRep.deleteById(UUID.fromString(id))
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 }

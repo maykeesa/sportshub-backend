@@ -63,7 +63,7 @@ class UsuarioController {
     fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
         val usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
 
-        return ResponseEntity.ok(usuario)
+        return ResponseEntity.status(201).body(usuario)
     }
 
     @PutMapping("/{id}")
@@ -80,7 +80,7 @@ class UsuarioController {
         }
 
         val usuarioAtualizado = this.usuarioService.atualizarEntidade(usuarioOpt.get(), usuarioForm)
-        return ResponseEntity.ok(usuarioAtualizado)
+        return ResponseEntity.status(202).body(usuarioAtualizado)
     }
 
     @DeleteMapping("/{id}")
@@ -97,6 +97,6 @@ class UsuarioController {
         }
 
         this.usuarioRep.deleteById(UUID.fromString(id))
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 }

@@ -42,7 +42,7 @@ class QuadraController {
     fun save(@RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Quadra> {
         val quadra: Quadra = this.quadraRep.save(ModelMapper().map(quadraForm, Quadra::class.java))
 
-        return ResponseEntity.ok(quadra)
+        return ResponseEntity.status(201).body(quadra)
     }
 
     @PutMapping("/{id}")
@@ -54,7 +54,7 @@ class QuadraController {
         }
 
         val quadraAtualizada = quadraService.atualizarEntidade(quadraOpt.get(), quadraForm)
-        return ResponseEntity.ok(quadraAtualizada)
+        return ResponseEntity.status(202).body(quadraAtualizada)
     }
 
     @DeleteMapping("/{id}")

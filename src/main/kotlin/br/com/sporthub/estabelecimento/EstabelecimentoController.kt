@@ -44,7 +44,7 @@ class EstabelecimentoController {
     fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Estabelecimento>{
         val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(ModelMapper().map(estabelecimentoForm, Estabelecimento::class.java))
 
-        return ResponseEntity.ok(estabelecimento)
+        return ResponseEntity.status(201).body(estabelecimento)
     }
 
     @PutMapping("/{id}")
@@ -56,7 +56,7 @@ class EstabelecimentoController {
         }
 
         val estabelecimentoAtualizado = this.estabelecimentoService.atualizarEntidade(estabelecimentoOpt.get(), estabelecimentoForm)
-        return ResponseEntity.ok(estabelecimentoAtualizado)
+        return ResponseEntity.status(202).body(estabelecimentoAtualizado)
     }
 
     @DeleteMapping("/{id}")

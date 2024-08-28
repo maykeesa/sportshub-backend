@@ -31,8 +31,7 @@ class HorarioController {
         ApiResponse(responseCode = "204", description = "Não há horário cadastrados")
     ])
     fun getAll(@PageableDefault(sort = ["diaSemana"], direction = Sort.Direction.ASC,
-        page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<Page<Horario>> {
+        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Horario>> {
         val horarios: Page<Horario> = this.horarioRep.findAll(paginacao)
 
         return ResponseEntity.ok(horarios)
@@ -53,7 +52,6 @@ class HorarioController {
 
         return  ResponseEntity.notFound().build()
     }
-
 
     @PostMapping
     @Operation(summary = "Salvar um horário")
@@ -81,7 +79,7 @@ class HorarioController {
         }
 
         val horarioAtualizado = this.horarioService.atualizarEntidade(horarioOpt.get(), horarioForm)
-        return ResponseEntity.ok(horarioAtualizado)
+        return ResponseEntity.status(202).body(horarioAtualizado)
     }
 
     @DeleteMapping("/{id}")
@@ -98,6 +96,6 @@ class HorarioController {
         }
 
         this.horarioRep.deleteById(UUID.fromString(id))
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 }
