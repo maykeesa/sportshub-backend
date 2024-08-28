@@ -2,6 +2,8 @@ package br.com.sporthub.estabelecimento
 
 import br.com.sporthub.quadra.Quadra
 import jakarta.persistence.*
+import org.hibernate.annotations.CreationTimestamp
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -17,6 +19,9 @@ data class Estabelecimento(
     var endereco: String,
     var cep: String,
     var descricao: String,
+    @CreationTimestamp
+    var dataCriacao: LocalDateTime,
+
     @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val quadras: List<Quadra>
 ) {

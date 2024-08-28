@@ -30,7 +30,7 @@ class UsuarioController {
         ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
         ApiResponse(responseCode = "204", description = "Não há usuários cadastrados")
     ])
-    fun getAllUsuarios(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
+    fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Usuario>>{
         val usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
 

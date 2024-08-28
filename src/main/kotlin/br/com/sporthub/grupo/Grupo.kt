@@ -2,6 +2,7 @@ package br.com.sporthub.grupo
 
 import br.com.sporthub.usuario.Usuario
 import jakarta.persistence.*
+import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 import java.util.*
 
@@ -13,6 +14,7 @@ data class Grupo (
     var id: UUID,
     var nome: String,
     var descricao: String,
+    @CreationTimestamp
     var dataCriacao: LocalDateTime,
     @ManyToMany
     @JoinTable(name = "usuario_grupo",
