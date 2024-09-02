@@ -24,7 +24,7 @@ data class Usuario(
     @CreationTimestamp
     var dataCriacao: LocalDateTime,
 
-    @ManyToMany(mappedBy = "usuario")
+    @ManyToMany(mappedBy = "usuarios")
     var grupos: List<Grupo>
     ) {
 }
