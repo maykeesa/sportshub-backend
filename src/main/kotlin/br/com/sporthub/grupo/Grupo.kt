@@ -12,12 +12,9 @@ import java.util.*
 data class Grupo(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null, // Using nullable UUID to support default value
-
+    var id: UUID,
     var nome: String,
-
     var descricao: String,
-
     @CreationTimestamp
     var dataCriacao: LocalDateTime,
 

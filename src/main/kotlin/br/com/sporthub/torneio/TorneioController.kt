@@ -1,14 +1,13 @@
 package br.com.sporthub.torneio
 
-import br.com.sporthub.reserva.Reserva
 import br.com.sporthub.torneio.form.TorneioForm
+import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -22,7 +21,7 @@ class TorneioController {
     private lateinit var torneioRep: TorneioRepository
 
     @Autowired
-    private lateinit var torneioServ: TorneioService
+    private lateinit var torneioService: TorneioService
 
     @GetMapping
     fun getAll(@PageableDefault(sort = ["dataCriacao"], direction = Sort.Direction.DESC,
@@ -45,7 +44,7 @@ class TorneioController {
     }
 
     @PostMapping
-    fun save(@RequestBody torneioForm: TorneioForm) : ResponseEntity<Torneio> {
+    fun save(@RequestBody @Valid torneioForm: TorneioForm) : ResponseEntity<Torneio> {
         val torneio: Torneio = this.torneioRep.save(ModelMapper().map(torneioForm, Torneio::class.java))
 
         return ResponseEntity.status(201).body(torneio)
@@ -59,7 +58,7 @@ class TorneioController {
             return ResponseEntity.notFound().build()
         }
 
-        val torneioAtualizado  = this.torneioServ.atualizarEntidade(torneioOpt.get(),torneioForm)
+        val torneioAtualizado  = this.torneioService.atualizarEntidade(torneioOpt.get(),torneioForm)
 
         return ResponseEntity.status(202).body(torneioAtualizado)
     }
@@ -75,8 +74,4 @@ class TorneioController {
         this.torneioRep.deleteById(UUID.fromString(id))
         return ResponseEntity.ok().build()
     }
-
-
-
-
 }

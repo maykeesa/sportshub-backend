@@ -1,6 +1,5 @@
 package br.com.sporthub.torneio
 
-import br.com.sporthub.reserva.Reserva
 import br.com.sporthub.service.GenericService
 import org.springframework.stereotype.Service
 
