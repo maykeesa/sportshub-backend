@@ -1,6 +1,7 @@
 package br.com.sporthub.torneio
 
 import br.com.sporthub.grupo.Grupo
+import br.com.sporthub.jogo.Jogo
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
@@ -19,5 +20,10 @@ data class Torneio(
 
     @ManyToOne
     @JoinColumn(name = "grupo_id")
-    var grupo: Grupo
+    var grupo: Grupo,
+
+    @OneToMany(mappedBy = "torneio", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val jogos: List<Jogo> = emptyList()
+
+
 )
