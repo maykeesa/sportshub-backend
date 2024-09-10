@@ -26,6 +26,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <a href="https://github.com/MaykeESA">
           <img src="https://avatars.githubusercontent.com/u/81484737?v=4" width="100px;" alt="Foto do Mayke Erick no GitHub"/><br>
         </a>
+        <br>
         <sub>
           <b>Mayke Erick</b>
         </sub>
@@ -36,6 +37,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <a href="https://github.com/YuriGarciaRibeiro">
           <img src="https://avatars.githubusercontent.com/u/81641949?v=4" width="100px;" alt="Foto do Brenno Oliveira no GitHub"/><br>
         </a>
+        <br>
         <sub>
           <b>Yuri Garcia</b>
         </sub>
