@@ -23,7 +23,6 @@ open class GenericService<T: Any>(private val entityType: Class<T>) {
         return entidade
     }
 
-    @Transactional
     open fun transformarListIdToEntity(ids: ArrayList<String>): ArrayList<Any>{
         val entidades: ArrayList<Any> = ArrayList()
 

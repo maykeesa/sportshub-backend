@@ -49,7 +49,6 @@ class UsuarioController {
         val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
         if(usuarioOpt.isPresent){
-            println(usuarioOpt.get())
             return ResponseEntity.ok(UsuarioDto(usuarioOpt.get()))
         }
 

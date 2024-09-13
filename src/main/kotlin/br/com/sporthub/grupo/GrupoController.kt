@@ -24,10 +24,10 @@ import kotlin.collections.ArrayList
 class GrupoController {
 
     @Autowired
-    private lateinit var grupoService: GrupoService
-    @Autowired
     private lateinit var grupoRep: GrupoRespository
 
+    @Autowired
+    private lateinit var grupoService: GrupoService
     @Autowired
     private lateinit var usuarioService: UsuarioService
 
@@ -56,7 +56,6 @@ class GrupoController {
         val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
 
         if(grupoOpt.isPresent){
-            println(grupoOpt.get())
             return ResponseEntity.ok(GrupoDto(grupoOpt.get()))
         }
 
@@ -70,21 +69,16 @@ class GrupoController {
         ApiResponse(responseCode = "404", description = "Grupo não encontrado")
     ])
     fun save(@RequestBody @Valid grupoForm: GrupoForm): ResponseEntity<Any>{
-        val usuariosAny: ArrayList<Any> = this.usuarioService.transformarListIdToEntity(grupoForm.usuarios)
-        val usuarios: ArrayList<Usuario> = ArrayList(usuariosAny.map { it as Usuario })
-        grupoForm.usuarios = ArrayList()
+        val usuarios: ArrayList<Usuario> = this.usuarioService.getListUsuarios(grupoForm)
 
         val modelMapper = ModelMapper()
         modelMapper.configuration.isSkipNullEnabled = true
-
         val grupo: Grupo = modelMapper.map(grupoForm, Grupo::class.java)
         grupo.usuarios = usuarios
 
         val grupoPersistido: Grupo = this.grupoRep.save(grupo)
 
-        return ResponseEntity.status(201).body(grupoPersistido)
-
-        //Modularizar isso
+        return ResponseEntity.status(201).body(GrupoDto(grupoPersistido))
     }
 
     @PutMapping("/{id}")

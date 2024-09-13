@@ -39,7 +39,7 @@ data class Usuario(
                 "dataNascimento=$dataNascimento, " +
                 "genero='$genero', " +
                 "telefone='$telefone', " +
-                "dataCriacao=$dataCriacao, "
-                //"grupos=${grupos.map { it.id }})"
+                "dataCriacao=$dataCriacao, " +
+                "grupos=${grupos.map { it.id }})"
     }
 }

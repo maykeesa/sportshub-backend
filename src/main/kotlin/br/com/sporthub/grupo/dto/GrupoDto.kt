@@ -17,6 +17,5 @@ data class GrupoDto(
         descricao = grupo.descricao,
         usuarios = grupo.usuarios.map { it.id },
         dataCriacao = grupo.dataCriacao
-
     )
 }
