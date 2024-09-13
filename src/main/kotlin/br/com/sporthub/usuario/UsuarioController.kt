@@ -1,5 +1,6 @@
 package br.com.sporthub.usuario
 
+import br.com.sporthub.usuario.dto.UsuarioDto
 import br.com.sporthub.usuario.form.UsuarioForm
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -31,10 +32,11 @@ class UsuarioController {
         ApiResponse(responseCode = "204", description = "Não há usuários cadastrados")
     ])
     fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
-        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Usuario>>{
-        val usuario: Page<Usuario> = this.usuarioRep.findAll(paginacao)
+        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<UsuarioDto>>{
+        val usuariosPage: Page<Usuario> = this.usuarioRep.findAll(paginacao)
+        val usuariosDtoPage = usuariosPage.map { usuario -> UsuarioDto(usuario) }
 
-        return ResponseEntity.ok(usuario)
+        return ResponseEntity.ok(usuariosDtoPage)
     }
 
     @GetMapping("/{id}")
@@ -44,15 +46,15 @@ class UsuarioController {
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
-        val usuario: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(id))
 
-        if(usuario.isPresent){
-            return ResponseEntity.ok(usuario.get())
+        if(usuarioOpt.isPresent){
+            println(usuarioOpt.get())
+            return ResponseEntity.ok(UsuarioDto(usuarioOpt.get()))
         }
 
         return  ResponseEntity.notFound().build()
     }
-
 
     @PostMapping
     @Operation(summary = "Salvar um usuário")
@@ -60,10 +62,10 @@ class UsuarioController {
         ApiResponse(responseCode = "200", description = "Retorna o usuário salvo"),
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
-    fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Usuario>{
+    fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any>{
         val usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
 
-        return ResponseEntity.status(201).body(usuario)
+        return ResponseEntity.status(201).body(UsuarioDto(usuario))
     }
 
     @PutMapping("/{id}")
@@ -79,8 +81,8 @@ class UsuarioController {
             return ResponseEntity.notFound().build()
         }
 
-        val usuarioAtualizado = this.usuarioService.atualizarEntidade(usuarioOpt.get(), usuarioForm)
-        return ResponseEntity.status(202).body(usuarioAtualizado)
+        val usuarioAtualizado= this.usuarioService.atualizarEntidade(usuarioOpt.get(), usuarioForm)
+        return ResponseEntity.status(202).body(UsuarioDto(usuarioAtualizado as Usuario))
     }
 
     @DeleteMapping("/{id}")

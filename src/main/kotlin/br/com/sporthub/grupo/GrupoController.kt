@@ -1,6 +1,9 @@
 package br.com.sporthub.grupo
 
+import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.grupo.form.GrupoForm
+import br.com.sporthub.usuario.Usuario
+import br.com.sporthub.usuario.UsuarioService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -14,6 +17,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/grupo")
@@ -24,6 +28,9 @@ class GrupoController {
     @Autowired
     private lateinit var grupoRep: GrupoRespository
 
+    @Autowired
+    private lateinit var usuarioService: UsuarioService
+
     @GetMapping
     @Operation(summary = "Listar todos os grupos")
     @ApiResponses(value = [
@@ -32,10 +39,11 @@ class GrupoController {
     ])
     fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<Page<Grupo>> {
-        val grupos: Page<Grupo> = this.grupoRep.findAll(paginacao)
+    ): ResponseEntity<Page<GrupoDto>> {
+        val gruposPage: Page<Grupo> = this.grupoRep.findAll(paginacao)
+        val gruposDtoPage: Page<GrupoDto> = gruposPage.map { grupo -> GrupoDto(grupo) }
 
-        return ResponseEntity.ok(grupos)
+        return ResponseEntity.ok(gruposDtoPage)
     }
 
     @GetMapping("/{id}")
@@ -45,10 +53,11 @@ class GrupoController {
         ApiResponse(responseCode = "404", description = "Grupo não encontrado")
     ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
-        val grupo: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
+        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
 
-        if(grupo.isPresent){
-            return ResponseEntity.ok(grupo.get())
+        if(grupoOpt.isPresent){
+            println(grupoOpt.get())
+            return ResponseEntity.ok(GrupoDto(grupoOpt.get()))
         }
 
         return  ResponseEntity.notFound().build()
@@ -60,10 +69,22 @@ class GrupoController {
         ApiResponse(responseCode = "200", description = "Retorna o grupo salvo"),
         ApiResponse(responseCode = "404", description = "Grupo não encontrado")
     ])
-    fun save(@RequestBody @Valid grupoForm: GrupoForm): ResponseEntity<Grupo>{
-        val grupo: Grupo = this.grupoRep.save(ModelMapper().map(grupoForm, Grupo::class.java))
+    fun save(@RequestBody @Valid grupoForm: GrupoForm): ResponseEntity<Any>{
+        val usuariosAny: ArrayList<Any> = this.usuarioService.transformarListIdToEntity(grupoForm.usuarios)
+        val usuarios: ArrayList<Usuario> = ArrayList(usuariosAny.map { it as Usuario })
+        grupoForm.usuarios = ArrayList()
 
-        return ResponseEntity.status(201).body(grupo)
+        val modelMapper = ModelMapper()
+        modelMapper.configuration.isSkipNullEnabled = true
+
+        val grupo: Grupo = modelMapper.map(grupoForm, Grupo::class.java)
+        grupo.usuarios = usuarios
+
+        val grupoPersistido: Grupo = this.grupoRep.save(grupo)
+
+        return ResponseEntity.status(201).body(grupoPersistido)
+
+        //Modularizar isso
     }
 
     @PutMapping("/{id}")
@@ -80,7 +101,7 @@ class GrupoController {
         }
 
         val grupoAtualizado = this.grupoService.atualizarEntidade(grupoOpt.get(), grupoForm)
-        return ResponseEntity.status(202).body(grupoAtualizado)
+        return ResponseEntity.status(202).body(GrupoDto(grupoAtualizado as Grupo))
     }
 
     @DeleteMapping("/{id}")
@@ -90,9 +111,9 @@ class GrupoController {
         ApiResponse(responseCode = "404", description = "Grupo não encontrado")
     ])
     fun delete(@PathVariable id: String): ResponseEntity<Void>{
-        val GrupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
+        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
 
-        if(GrupoOpt.isEmpty){
+        if(grupoOpt.isEmpty){
             return ResponseEntity.notFound().build()
         }
 

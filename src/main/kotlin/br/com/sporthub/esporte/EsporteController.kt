@@ -1,6 +1,7 @@
 package br.com.sporthub.esporte
 
 import br.com.sporthub.esporte.form.EsporteForm
+import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -42,14 +43,14 @@ class EsporteController {
     }
 
     @PostMapping
-    fun save(esporteForm: EsporteForm): ResponseEntity<Esporte> {
+    fun save(@RequestBody @Valid esporteForm: EsporteForm): ResponseEntity<Esporte> {
         val esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
 
         return ResponseEntity.status(201).body(esporte)
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: String, esporteForm: Map<String, Any>): ResponseEntity<Any> {
+    fun update(@PathVariable id: String, @RequestBody esporteForm: Map<String, Any>): ResponseEntity<Any> {
         val esporteOpt: Optional<Esporte> = this.esporteRep.findById(UUID.fromString(id))
 
         if (esporteOpt.isEmpty) {
