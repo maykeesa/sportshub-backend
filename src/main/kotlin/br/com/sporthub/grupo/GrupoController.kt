@@ -138,8 +138,7 @@ class GrupoController {
             return ResponseEntity.notFound().build()
         }
 
-        grupo.usuarios.add(usuarioOpt.get())
-        this.grupoRep.save(grupo)
+        this.grupoService.addUsuario(grupo, usuarioOpt.get())
 
         return ResponseEntity.ok(GrupoDto(grupo))
     }

@@ -9,7 +9,7 @@ import java.util.UUID
 open class GenericService<T: Any>(private val entityType: Class<T>) {
 
     @PersistenceContext
-    private lateinit var entityManager: EntityManager
+    public lateinit var entityManager: EntityManager
 
     @Transactional
     open fun atualizarEntidade(entidade: Any, form: Map<String, Any>): Any {
