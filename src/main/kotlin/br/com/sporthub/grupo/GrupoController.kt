@@ -3,6 +3,7 @@ package br.com.sporthub.grupo
 import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.grupo.form.GrupoForm
 import br.com.sporthub.usuario.Usuario
+import br.com.sporthub.usuario.UsuarioRepository
 import br.com.sporthub.usuario.UsuarioService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -30,6 +31,8 @@ class GrupoController {
     private lateinit var grupoService: GrupoService
     @Autowired
     private lateinit var usuarioService: UsuarioService
+    @Autowired
+    private lateinit var usuarioRep: UsuarioRepository
 
     @GetMapping
     @Operation(summary = "Listar todos os grupos")
@@ -113,5 +116,31 @@ class GrupoController {
 
         this.grupoRep.deleteById(UUID.fromString(id))
         return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/{id}/usuario/{idUsuario}")
+    @Operation(summary = "Adicionar um usuário a um grupo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o grupo com o usuário adicionado"),
+        ApiResponse(responseCode = "404", description = "Grupo ou usuário não encontrado")
+    ])
+    fun addUsuario(@PathVariable id: String, @PathVariable idUsuario: String): ResponseEntity<Any>{
+        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
+
+        if (grupoOpt.isEmpty){
+            return ResponseEntity.notFound().build()
+        }
+
+        val grupo: Grupo = grupoOpt.get()
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(idUsuario))
+
+        if (usuarioOpt.isEmpty){
+            return ResponseEntity.notFound().build()
+        }
+
+        grupo.usuarios.add(usuarioOpt.get())
+        this.grupoRep.save(grupo)
+
+        return ResponseEntity.ok(GrupoDto(grupo))
     }
 }

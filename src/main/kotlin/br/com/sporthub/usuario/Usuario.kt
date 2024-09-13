@@ -28,7 +28,7 @@ data class Usuario(
 
     @ManyToMany(mappedBy = "usuarios")
     @JsonBackReference
-    var grupos: List<Grupo> = ArrayList()
+    var grupos: MutableList<Grupo> = mutableListOf()
 ){
     override fun toString(): String {
         return "Usuario(id=$id, " +

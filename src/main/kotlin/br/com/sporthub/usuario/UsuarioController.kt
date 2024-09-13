@@ -100,4 +100,5 @@ class UsuarioController {
         this.usuarioRep.deleteById(UUID.fromString(id))
         return ResponseEntity.ok().build()
     }
+
 }

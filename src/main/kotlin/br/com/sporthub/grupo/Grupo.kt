@@ -25,7 +25,7 @@ data class Grupo(
         inverseJoinColumns = [JoinColumn(name = "usuario_id")]
     )
     @JsonManagedReference
-    var usuarios: List<Usuario>,
+    var usuarios: MutableList<Usuario> = mutableListOf(),
 
     @OneToMany(mappedBy = "grupo", cascade = [CascadeType.ALL], orphanRemoval = true)
     var torneios: List<Torneio>
