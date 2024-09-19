@@ -1,6 +1,8 @@
 package br.com.sporthub.estabelecimento
 
+import br.com.sporthub.estabelecimento.dto.EstabelecimentoDto
 import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
+import br.com.sporthub.grupo.dto.GrupoDto
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,10 +25,12 @@ class EstabelecimentoController {
 
     @GetMapping
     fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
-        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Estabelecimento>> {
-        val estabelecimentos: Page<Estabelecimento> = this.estabelecimentoRep.findAll(paginacao)
+        page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<EstabelecimentoDto>> {
+        val estabelecimentosPage: Page<Estabelecimento> = this.estabelecimentoRep.findAll(paginacao)
+        val estabelecimentoDtoPage: Page<EstabelecimentoDto> =
+            estabelecimentosPage.map { estabelecimento -> EstabelecimentoDto(estabelecimento) }
 
-        return ResponseEntity.ok(estabelecimentos)
+        return ResponseEntity.ok(estabelecimentoDtoPage)
     }
 
     @GetMapping("/{id}")
@@ -34,17 +38,17 @@ class EstabelecimentoController {
         val estabelecimento: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
         if(estabelecimento.isPresent){
-            return ResponseEntity.ok(estabelecimento.get())
+            return ResponseEntity.ok(EstabelecimentoDto(estabelecimento.get()))
         }
 
         return  ResponseEntity.notFound().build()
     }
 
     @PostMapping
-    fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Estabelecimento>{
+    fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<EstabelecimentoDto>{
         val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(ModelMapper().map(estabelecimentoForm, Estabelecimento::class.java))
 
-        return ResponseEntity.status(201).body(estabelecimento)
+        return ResponseEntity.status(201).body(EstabelecimentoDto(estabelecimento))
     }
 
     @PutMapping("/{id}")
@@ -56,11 +60,11 @@ class EstabelecimentoController {
         }
 
         val estabelecimentoAtualizado = this.estabelecimentoService.atualizarEntidade(estabelecimentoOpt.get(), estabelecimentoForm)
-        return ResponseEntity.status(202).body(estabelecimentoAtualizado)
+        return ResponseEntity.status(202).body(EstabelecimentoDto(estabelecimentoAtualizado as Estabelecimento))
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: String): ResponseEntity<Estabelecimento>{
+    fun delete(@PathVariable id: String): ResponseEntity<Void>{
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
         if(estabelecimentoOpt.isEmpty){

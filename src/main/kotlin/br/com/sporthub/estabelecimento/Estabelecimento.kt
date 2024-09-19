@@ -1,6 +1,7 @@
 package br.com.sporthub.estabelecimento
 
 import br.com.sporthub.quadra.Quadra
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
@@ -23,6 +24,7 @@ data class Estabelecimento(
     var dataCriacao: LocalDateTime,
 
     @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonBackReference
     val quadras: List<Quadra>
 ) {
 }

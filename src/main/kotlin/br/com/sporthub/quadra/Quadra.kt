@@ -2,6 +2,7 @@ package br.com.sporthub.quadra
 
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.horario.Horario
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.util.*
 
@@ -15,7 +16,8 @@ data class Quadra(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estabelecimento_id")
-    val estabelecimento: Estabelecimento,
+    @JsonManagedReference
+    var estabelecimento: Estabelecimento,
 
     @OneToMany(mappedBy = "quadra", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var horarios: List<Horario>
