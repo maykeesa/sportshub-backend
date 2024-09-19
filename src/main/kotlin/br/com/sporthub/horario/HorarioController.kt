@@ -81,7 +81,7 @@ class HorarioController {
         val quadraOpt = this.quadraRep.findById(UUID.fromString(horarioForm.quadraId))
 
         if(quadraOpt.isEmpty){
-            return ResponseEntity.status(404).body(mapOf("error" to "Quadra não existe."))
+            return ResponseEntity.status(404).body(mapOf("error" to "Quadra não encontrado/existe."))
         }
 
         if(horarioFim.isBefore(horarioInicio)){

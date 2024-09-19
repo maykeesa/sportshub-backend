@@ -2,19 +2,19 @@ package br.com.sporthub.grupo
 
 import br.com.sporthub.service.GenericService
 import br.com.sporthub.usuario.Usuario
+import br.com.sporthub.usuario.UsuarioRepository
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class GrupoService : GenericService<Grupo>(Grupo::class.java){
 
-    @Transactional
+    @Autowired
+    private lateinit var grupoRep: GrupoRespository
+
     fun addUsuario(grupo: Grupo, usuario: Usuario) {
-        if (grupo.usuarios != null && usuario != null) {
-            grupo.usuarios.add(usuario)
-            this.entityManager.merge(grupo)
-        } else {
-            throw IllegalArgumentException("Grupo ou Usuário não podem ser nulos")
-        }
+        grupo.usuarios.add(usuario)
+        this.grupoRep.save(grupo)
     }
 }

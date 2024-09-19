@@ -84,6 +84,30 @@ class GrupoController {
         return ResponseEntity.status(201).body(GrupoDto(grupoPersistido))
     }
 
+    @PostMapping("/{id}/usuario/{idUsuario}")
+    @Operation(summary = "Adicionar um usuário a um grupo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o grupo com o usuário adicionado"),
+        ApiResponse(responseCode = "404", description = "Grupo ou usuário não encontrado")
+    ])
+    fun addUsuario(@PathVariable id: String, @PathVariable idUsuario: String): ResponseEntity<Any>{
+        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(idUsuario))
+
+        if (grupoOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
+        }
+
+        if (usuarioOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
+        }
+
+        val grupo: Grupo = grupoOpt.get()
+        this.grupoService.addUsuario(grupo, usuarioOpt.get())
+
+        return ResponseEntity.ok(GrupoDto(grupo))
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um grupo")
     @ApiResponses(value = [
@@ -116,30 +140,5 @@ class GrupoController {
 
         this.grupoRep.deleteById(UUID.fromString(id))
         return ResponseEntity.ok().build()
-    }
-
-    @PostMapping("/{id}/usuario/{idUsuario}")
-    @Operation(summary = "Adicionar um usuário a um grupo")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Retorna o grupo com o usuário adicionado"),
-        ApiResponse(responseCode = "404", description = "Grupo ou usuário não encontrado")
-    ])
-    fun addUsuario(@PathVariable id: String, @PathVariable idUsuario: String): ResponseEntity<Any>{
-        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
-
-        if (grupoOpt.isEmpty){
-            return ResponseEntity.notFound().build()
-        }
-
-        val grupo: Grupo = grupoOpt.get()
-        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(idUsuario))
-
-        if (usuarioOpt.isEmpty){
-            return ResponseEntity.notFound().build()
-        }
-
-        this.grupoService.addUsuario(grupo, usuarioOpt.get())
-
-        return ResponseEntity.ok(GrupoDto(grupo))
     }
 }
