@@ -1,6 +1,7 @@
 package br.com.sporthub.horario
 
 import br.com.sporthub.quadra.Quadra
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import java.time.LocalTime
 import java.util.UUID
@@ -17,5 +18,6 @@ data class Horario(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quadra_id")
+    @JsonBackReference
     var quadra: Quadra) {
 }

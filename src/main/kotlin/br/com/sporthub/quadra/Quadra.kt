@@ -20,6 +20,7 @@ data class Quadra(
     var estabelecimento: Estabelecimento,
 
     @OneToMany(mappedBy = "quadra", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonManagedReference
     var horarios: List<Horario>
 ) {
 
