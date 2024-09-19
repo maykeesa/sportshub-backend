@@ -1,5 +1,6 @@
 package br.com.sporthub.usuario
 
+import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.dto.UsuarioDto
 import br.com.sporthub.usuario.form.UsuarioForm
 import io.swagger.v3.oas.annotations.Operation
@@ -62,7 +63,8 @@ class UsuarioController {
         ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     ])
     fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any>{
-        val usuario: Usuario = this.usuarioRep.save(ModelMapper().map(usuarioForm, Usuario::class.java))
+        val mapper = UtilsService.getGenericModelMapper()
+        val usuario: Usuario = this.usuarioRep.save(mapper.map(usuarioForm, Usuario::class.java))
 
         return ResponseEntity.status(201).body(UsuarioDto(usuario))
     }

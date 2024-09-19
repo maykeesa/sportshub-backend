@@ -2,6 +2,7 @@ package br.com.sporthub.grupo
 
 import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.grupo.form.GrupoForm
+import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.Usuario
 import br.com.sporthub.usuario.UsuarioService
 import io.swagger.v3.oas.annotations.Operation
@@ -69,11 +70,10 @@ class GrupoController {
         ApiResponse(responseCode = "404", description = "Grupo não encontrado")
     ])
     fun save(@RequestBody @Valid grupoForm: GrupoForm): ResponseEntity<Any>{
-        val usuarios: ArrayList<Usuario> = this.usuarioService.getListUsuarios(grupoForm)
+        val mapper = UtilsService.getGenericModelMapper()
+        val grupo: Grupo = mapper.map(grupoForm, Grupo::class.java)
 
-        val modelMapper = ModelMapper()
-        modelMapper.configuration.isSkipNullEnabled = true
-        val grupo: Grupo = modelMapper.map(grupoForm, Grupo::class.java)
+        val usuarios: ArrayList<Usuario> = this.usuarioService.getListUsuarios(grupoForm)
         grupo.usuarios = usuarios
 
         val grupoPersistido: Grupo = this.grupoRep.save(grupo)

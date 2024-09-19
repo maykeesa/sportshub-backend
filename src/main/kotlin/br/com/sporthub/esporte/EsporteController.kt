@@ -1,6 +1,7 @@
 package br.com.sporthub.esporte
 
 import br.com.sporthub.esporte.form.EsporteForm
+import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,7 +45,8 @@ class EsporteController {
 
     @PostMapping
     fun save(@RequestBody @Valid esporteForm: EsporteForm): ResponseEntity<Esporte> {
-        val esporte: Esporte = this.esporteRep.save(ModelMapper().map(esporteForm, Esporte::class.java))
+        val mapper = UtilsService.getGenericModelMapper()
+        val esporte: Esporte = this.esporteRep.save(mapper.map(esporteForm, Esporte::class.java))
 
         return ResponseEntity.status(201).body(esporte)
     }

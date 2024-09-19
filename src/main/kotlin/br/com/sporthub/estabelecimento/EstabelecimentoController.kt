@@ -3,6 +3,7 @@ package br.com.sporthub.estabelecimento
 import br.com.sporthub.estabelecimento.dto.EstabelecimentoDto
 import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
 import br.com.sporthub.grupo.dto.GrupoDto
+import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +47,8 @@ class EstabelecimentoController {
 
     @PostMapping
     fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<EstabelecimentoDto>{
-        val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(ModelMapper().map(estabelecimentoForm, Estabelecimento::class.java))
+        val mapper = UtilsService.getGenericModelMapper()
+        val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(mapper.map(estabelecimentoForm, Estabelecimento::class.java))
 
         return ResponseEntity.status(201).body(EstabelecimentoDto(estabelecimento))
     }

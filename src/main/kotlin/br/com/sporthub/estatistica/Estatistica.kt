@@ -5,7 +5,7 @@ import br.com.sporthub.usuario.Usuario
 import jakarta.persistence.*
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
-import java.time.LocalTime
+import java.time.LocalDate
 import java.util.*
 
 @Entity
@@ -14,7 +14,7 @@ data class Estatistica (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,
-    var data: LocalTime,
+    var data: LocalDate,
 
     @DecimalMin("0.0")
     @DecimalMax("5.0")

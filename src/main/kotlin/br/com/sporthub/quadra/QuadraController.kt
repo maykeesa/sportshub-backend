@@ -5,6 +5,7 @@ import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.quadra.dto.QuadraDto
 import br.com.sporthub.quadra.form.QuadraForm
+import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,7 +49,8 @@ class QuadraController {
 
     @PostMapping
     fun save(@RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Any> {
-        var quadra = ModelMapper().map(quadraForm, Quadra::class.java)
+        val mapper = UtilsService.getGenericModelMapper()
+        var quadra = mapper.map(quadraForm, Quadra::class.java)
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(quadraForm.estabelecimentoId))
 
         if(estabelecimentoOpt.isEmpty){
