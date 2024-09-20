@@ -1,11 +1,13 @@
 package br.com.sporthub.usuario
 
 import br.com.sporthub.grupo.Grupo
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity
 @Table(name = "usuarios")
@@ -25,6 +27,19 @@ data class Usuario(
     var dataCriacao: LocalDateTime,
 
     @ManyToMany(mappedBy = "usuarios")
-    var grupos: List<Grupo>
-    ) {
+    @JsonBackReference
+    var grupos: MutableList<Grupo> = mutableListOf()
+){
+    override fun toString(): String {
+        return "Usuario(id=$id, " +
+                "cpf='$cpf', " +
+                "nome='$nome', " +
+                "email='$email', " +
+                "senha='$senha', " +
+                "dataNascimento=$dataNascimento, " +
+                "genero='$genero', " +
+                "telefone='$telefone', " +
+                "dataCriacao=$dataCriacao, " +
+                "grupos=${grupos.map { it.id }})"
+    }
 }

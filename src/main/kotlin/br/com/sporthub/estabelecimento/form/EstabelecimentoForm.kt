@@ -2,9 +2,10 @@ package br.com.sporthub.estabelecimento.form
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 
-class EstabelecimentoForm(
-    @NotBlank(message = "O campo não pode ser vazio ou nulo.")
+data class EstabelecimentoForm(
+    @NotEmpty(message = "O campo não pode ser vazio ou nulo.")
     var nome: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     @Email(message = "O Email não é válido.")

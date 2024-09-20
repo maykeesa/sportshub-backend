@@ -1,8 +1,10 @@
 package br.com.sporthub.estatistica
 
 import br.com.sporthub.estatistica.form.EstatisticaForm
+import br.com.sporthub.grupo.GrupoRespository
+import br.com.sporthub.service.UtilsService
+import br.com.sporthub.usuario.UsuarioRepository
 import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -18,8 +20,13 @@ class EstatisticaController {
 
     @Autowired
     private lateinit var estatisticaService: EstatisticaService
+
     @Autowired
     private lateinit var estatisticaRep: EstatisticaRepository
+    @Autowired
+    private lateinit var grupoRep: GrupoRespository
+    @Autowired
+    private lateinit var usuarioRep: UsuarioRepository
 
     @GetMapping
     fun getAll(@PageableDefault(sort = ["id"], direction = Sort.Direction.ASC,
@@ -41,14 +48,34 @@ class EstatisticaController {
     }
 
     @PostMapping
-    fun save(@RequestBody @Valid estatisticaForm: EstatisticaForm): ResponseEntity<Estatistica> {
-        val estatistica: Estatistica = this.estatisticaRep.save(ModelMapper().map(estatisticaForm, Estatistica::class.java))
+    fun save(@RequestBody @Valid estatisticaForm: EstatisticaForm): ResponseEntity<Any> {
+        val mapper = UtilsService.getGenericModelMapper()
 
-        return ResponseEntity.status(201).body(estatistica)
+        val estatistica = mapper.map(estatisticaForm, Estatistica::class.java)
+        estatistica.data = UtilsService.dataStringToLocalDate(estatisticaForm.data)
+
+        val usuarioOpt = this.usuarioRep.findById(UUID.fromString(estatisticaForm.usuarioId))
+        val grupoOpt = this.grupoRep.findById(UUID.fromString(estatisticaForm.grupoId))
+
+        if (usuarioOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
+        }
+
+        if (grupoOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
+        }
+
+        estatistica.usuario = usuarioOpt.get()
+        estatistica.grupo = grupoOpt.get()
+
+        val estatisticaPersistida: Estatistica = this.estatisticaRep.save(estatistica)
+
+        return ResponseEntity.status(201).body(estatisticaPersistida)
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: String, estatisticaForm: Map<String, Any>): ResponseEntity<Any> {
+    fun update(@PathVariable id: String, @RequestBody estatisticaForm: Map<String, Any>): ResponseEntity<Any> {
+        println(estatisticaForm)
         val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
         if (estatisticaOpt.isEmpty) {

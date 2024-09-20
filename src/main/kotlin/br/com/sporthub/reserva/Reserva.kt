@@ -3,8 +3,8 @@ package br.com.sporthub.reserva
 import br.com.sporthub.horario.Horario
 import br.com.sporthub.usuario.Usuario
 import jakarta.persistence.*
-import java.time.LocalDateTime
-import java.util.UUID
+import java.time.LocalDate
+import java.util.*
 
 @Entity
 @Table(name = "reservas")
@@ -12,7 +12,7 @@ data class Reserva(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,
-    var dataReserva: LocalDateTime,
+    var dataReserva: LocalDate,
     var ativa: Boolean,
 
     @ManyToOne(fetch = FetchType.LAZY)
