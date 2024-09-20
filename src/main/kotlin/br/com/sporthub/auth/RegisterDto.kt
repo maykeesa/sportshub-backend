@@ -11,6 +11,5 @@ class RegisterDto(
     var dataNascimento: LocalDate,
     var genero: String,
     var telefone: String,
-    var role: UserRole
 ) {
 }

@@ -3,6 +3,7 @@ package br.com.sporthub.auth
 import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.Usuario
 import br.com.sporthub.usuario.UsuarioRepository
+import com.example.auth.domain.user.UserRole
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -49,10 +50,34 @@ class AuthController {
         data.senha = encryptedPassword
 
         val mapper = UtilsService.getGenericModelMapper()
-        val usuario: Usuario = this.usuarioRepository.save(mapper.map(data, Usuario::class.java))
+        val usuario: Usuario = mapper.map(data, Usuario::class.java)
+        usuario.role = UserRole.USER
+
+        val saveUsuario: Usuario = this.usuarioRepository.save(usuario)
 
         usuarioRepository.save(usuario)
 
         return ResponseEntity.ok("Usuário registrado com sucesso")
     }
+
+    @PostMapping("/registerAdmin")
+    fun registerAdmin(@RequestBody @Valid data: RegisterDto): ResponseEntity<Any> {
+        if (this.usuarioRepository.findByEmail(data.email) != null) {
+            return ResponseEntity.badRequest().body("Email já cadastrado")
+        }
+
+        var encryptedPassword = BCryptPasswordEncoder().encode(data.senha)
+        data.senha = encryptedPassword
+
+        val mapper = UtilsService.getGenericModelMapper()
+        val usuario: Usuario = mapper.map(data, Usuario::class.java)
+        usuario.role = UserRole.ADMIN
+
+        val saveUsuario: Usuario = this.usuarioRepository.save(usuario)
+
+        usuarioRepository.save(usuario)
+
+        return ResponseEntity.ok("Usuário registrado com sucesso")
+    }
+
 }

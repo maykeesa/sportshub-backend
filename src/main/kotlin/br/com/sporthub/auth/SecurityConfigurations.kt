@@ -36,9 +36,10 @@ class SecurityConfigurations {
                     .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/webjars/**").permitAll()
+                    // mapeamento rotas auth
                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/registerAdmin").hasRole("ADMIN")
                     // mapeamento rotas de esporte
                     .requestMatchers(HttpMethod.GET, "/esporte").permitAll()
                     .requestMatchers(HttpMethod.GET, "/esporte/**").permitAll()
