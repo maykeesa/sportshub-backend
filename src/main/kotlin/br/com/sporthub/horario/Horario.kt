@@ -20,4 +20,14 @@ data class Horario(
     @JoinColumn(name = "quadra_id")
     @JsonBackReference
     var quadra: Quadra) {
+
+    override fun toString(): String {
+        return "Horario(" +
+                "id=$id, " +
+                "horarioInicio=$horarioInicio, " +
+                "horarioFim=$horarioFim, " +
+                "duracao=$duracao, " +
+                "diaSemana=$diaSemana, " +
+                "quadra=${quadra.id})"
+    }
 }

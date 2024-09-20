@@ -1,7 +1,6 @@
 package br.com.sporthub.service
 
 import org.modelmapper.ModelMapper
-import org.modelmapper.PropertyMap
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,6 +30,7 @@ class UtilsService {
         fun dataStringToLocalDate(data: String): LocalDate {
             val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy")
             return LocalDate.parse(data, formato)
+
         }
 
         fun timeStringToLocalTime(time: String): LocalTime {

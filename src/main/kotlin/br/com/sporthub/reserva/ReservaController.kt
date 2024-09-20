@@ -1,11 +1,15 @@
 package br.com.sporthub.reserva
 
+import br.com.sporthub.horario.Horario
+import br.com.sporthub.horario.HorarioRepository
 import br.com.sporthub.reserva.form.ReservaForm
+import br.com.sporthub.service.UtilsService
+import br.com.sporthub.usuario.Usuario
+import br.com.sporthub.usuario.UsuarioRepository
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -23,6 +27,10 @@ class ReservaController {
     private lateinit var reservaService: ReservaService
     @Autowired
     private lateinit var reservaRep: ReservaRepository
+    @Autowired
+    private lateinit var horarioRep: HorarioRepository
+    @Autowired
+    private lateinit var usuarioRep: UsuarioRepository
 
     @GetMapping
     @Operation(summary = "Listar todas as reservas")
@@ -60,10 +68,28 @@ class ReservaController {
         ApiResponse(responseCode = "200", description = "Retorna a reserva salvo"),
         ApiResponse(responseCode = "404", description = "Reserva não encontrado")
     ])
-    fun save(@RequestBody @Valid reservaForm: ReservaForm): ResponseEntity<Reserva> {
-        val reserva: Reserva = this.reservaRep.save(ModelMapper().map(reservaForm, Reserva::class.java))
+    fun save(@RequestBody @Valid reservaForm: ReservaForm): ResponseEntity<Any> {
+        val mapper = UtilsService.getGenericModelMapper()
 
-        return ResponseEntity.status(201).body(reserva)
+        val reserva = mapper.map(reservaForm, Reserva::class.java)
+        reserva.dataReserva = UtilsService.dataStringToLocalDate(reservaForm.dataReserva)
+        val horarioOpt: Optional<Horario> = this.horarioRep.findById(UUID.fromString(reservaForm.horarioId))
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(reservaForm.usuarioId))
+
+        if(horarioOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Horário não encontrado/existe."))
+        }
+
+        if(usuarioOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
+        }
+
+        reserva.horario = horarioOpt.get()
+        reserva.usuario = usuarioOpt.get()
+
+        val reservaPersistida: Reserva = this.reservaRep.save(reserva)
+
+        return ResponseEntity.status(201).body(reservaPersistida)
     }
 
     @PutMapping("/{id}")

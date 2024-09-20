@@ -23,5 +23,11 @@ data class Quadra(
     @JsonManagedReference
     var horarios: List<Horario>
 ) {
-
+    override fun toString(): String {
+        return "Quadra(" +
+                "id=$id, " +
+                "capacidade=$capacidade, " +
+                "estabelecimento=$estabelecimento, " +
+                "horarios=$horarios)"
+    }
 }
