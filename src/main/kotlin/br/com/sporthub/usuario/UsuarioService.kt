@@ -1,6 +1,5 @@
 package br.com.sporthub.usuario
 
-import br.com.sporthub.grupo.Grupo
 import br.com.sporthub.grupo.form.GrupoForm
 import br.com.sporthub.service.GenericService
 import org.springframework.stereotype.Service

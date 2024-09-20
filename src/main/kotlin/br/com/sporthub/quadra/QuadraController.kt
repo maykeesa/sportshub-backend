@@ -1,13 +1,14 @@
 package br.com.sporthub.quadra
 
+import br.com.sporthub.esporte.Esporte
+import br.com.sporthub.esporte.EsporteRepository
+import br.com.sporthub.esporte.EsporteService
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.estabelecimento.EstabelecimentoRepository
-import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.quadra.dto.QuadraDto
 import br.com.sporthub.quadra.form.QuadraForm
 import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -27,6 +28,10 @@ class QuadraController {
     private lateinit var quadraRep: QuadraRepository
     @Autowired
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
+    @Autowired
+    private lateinit var esporteRep: EsporteRepository
+    @Autowired
+    private lateinit var esporteService: EsporteService
 
     @GetMapping
     fun getAll(@PageableDefault(sort = arrayOf("id"), direction = Sort.Direction.ASC,
@@ -52,15 +57,19 @@ class QuadraController {
         val mapper = UtilsService.getGenericModelMapper()
         var quadra = mapper.map(quadraForm, Quadra::class.java)
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(quadraForm.estabelecimentoId))
+        val esportes: List<Esporte> = this.esporteService.getListEsportes(quadraForm.esportes)
 
         if(estabelecimentoOpt.isEmpty){
             return ResponseEntity.status(404).body(mapOf("error" to "Estabelecimento não encontrado/existe."))
         }
 
         quadra.estabelecimento = estabelecimentoOpt.get()
+        quadra.esportes = esportes
+        println(quadra.toString())
+
         quadra = this.quadraRep.save(quadra)
 
-        return ResponseEntity.status(201).body(QuadraDto(quadra))
+        return ResponseEntity.status(201).body(QuadraDto(quadra, false))
     }
 
     @PutMapping("/{id}")
