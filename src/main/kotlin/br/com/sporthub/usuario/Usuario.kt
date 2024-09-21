@@ -65,8 +65,7 @@ class Usuario(
     override fun isEnabled(): Boolean {
         return true // Indica se o usuário está ativo
     }
-    
-){
+
     override fun toString(): String {
         return "Usuario(id=$id, " +
                 "cpf='$cpf', " +
