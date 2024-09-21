@@ -20,6 +20,4 @@ data class EstabelecimentoForm(
     var cep: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var descricao: String
-) {
-
-}
+)

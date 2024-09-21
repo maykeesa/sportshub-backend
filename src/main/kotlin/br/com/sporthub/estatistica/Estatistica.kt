@@ -30,5 +30,4 @@ data class Estatistica (
     @JoinColumn(name = "usuario_id")
     @ManyToOne(fetch = FetchType.LAZY)
     var usuario: Usuario,
-){
-}
+)

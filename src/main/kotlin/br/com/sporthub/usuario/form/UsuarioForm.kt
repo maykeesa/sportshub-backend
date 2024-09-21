@@ -23,5 +23,4 @@ data class UsuarioForm (
     @Min(value = 10)
     @Max(value = 11)
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var telefone: String){
-}
+    var telefone: String)

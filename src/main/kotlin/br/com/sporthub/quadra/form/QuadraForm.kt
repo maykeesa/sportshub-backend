@@ -15,6 +15,4 @@ data class QuadraForm(
     var descricao: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var valorHora: Double
-) {
-
-}
+)

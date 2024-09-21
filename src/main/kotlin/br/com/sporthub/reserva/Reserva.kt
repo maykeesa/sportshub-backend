@@ -22,5 +22,4 @@ data class Reserva(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     var usuario: Usuario
-) {
-}
+)

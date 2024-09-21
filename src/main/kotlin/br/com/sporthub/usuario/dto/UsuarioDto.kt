@@ -1,5 +1,6 @@
 package br.com.sporthub.usuario.dto
 
+import br.com.sporthub.usuario.UserRole
 import br.com.sporthub.usuario.Usuario
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -15,6 +16,7 @@ data class UsuarioDto(
     var genero: String,
     var telefone: String,
     var grupos: List<UUID>,
+    var roles: UserRole,
     var dataCriacao: LocalDateTime
 ){
     constructor(usuario: Usuario): this(
@@ -25,6 +27,7 @@ data class UsuarioDto(
         dataNascimento = usuario.dataNascimento,
         genero = usuario.genero,
         telefone = usuario.telefone,
+        roles = usuario.role,
         grupos = if (usuario.grupos != null) usuario.grupos.map { it.id } else ArrayList(),
         dataCriacao = usuario.dataCriacao
     )

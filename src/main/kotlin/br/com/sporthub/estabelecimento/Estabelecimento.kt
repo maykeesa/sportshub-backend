@@ -26,5 +26,4 @@ data class Estabelecimento(
     @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JsonBackReference
     val quadras: List<Quadra>
-) {
-}
+)

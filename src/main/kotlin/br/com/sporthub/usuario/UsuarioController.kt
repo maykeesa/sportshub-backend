@@ -1,13 +1,9 @@
 package br.com.sporthub.usuario
 
-import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.dto.UsuarioDto
-import br.com.sporthub.usuario.form.UsuarioForm
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -54,19 +50,6 @@ class UsuarioController {
         }
 
         return  ResponseEntity.notFound().build()
-    }
-
-    @PostMapping
-    @Operation(summary = "Salvar um usuário")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Retorna o usuário salvo"),
-        ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    ])
-    fun save(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any>{
-        val mapper = UtilsService.getGenericModelMapper()
-        val usuario: Usuario = this.usuarioRep.save(mapper.map(usuarioForm, Usuario::class.java))
-
-        return ResponseEntity.status(201).body(UsuarioDto(usuario))
     }
 
     @PutMapping("/{id}")
