@@ -6,18 +6,18 @@ import br.com.sporthub.horario.Horario
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity
 @Table(name = "quadras")
 data class Quadra(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID,
+    var id: UUID?,
     var capacidade: Int,
     var nota : Double,
     var descricao : String,
     var valorHora : Double,
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -26,7 +26,7 @@ data class Quadra(
         inverseJoinColumns = [JoinColumn(name = "esporte_id")]
     )
     @JsonManagedReference
-    var esportes: List<Esporte>,
+    var esportes: List<Esporte> = ArrayList(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estabelecimento_id")
@@ -35,7 +35,7 @@ data class Quadra(
 
     @OneToMany(mappedBy = "quadra", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JsonManagedReference
-    var horarios: List<Horario>
+    var horarios: List<Horario> = ArrayList()
 ) {
     override fun toString(): String {
         return "Quadra(" +
@@ -43,6 +43,7 @@ data class Quadra(
                 "capacidade=$capacidade, " +
                 "nota=$nota, descricao='$descricao', " +
                 "valorHora=$valorHora, esportes=$esportes, " +
+                "estabelecimento=${estabelecimento.id}, " +
                 "horarios=$horarios)"
     }
 }

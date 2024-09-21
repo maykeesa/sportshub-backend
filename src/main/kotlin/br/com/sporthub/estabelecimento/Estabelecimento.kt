@@ -20,10 +20,10 @@ data class Estabelecimento(
     var endereco: String,
     var cep: String,
     var descricao: String,
-    @CreationTimestamp
-    var dataCriacao: LocalDateTime,
 
     @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JsonBackReference
-    val quadras: List<Quadra>
+    val quadras: List<Quadra>,
+    @CreationTimestamp
+    var dataCriacao: LocalDateTime,
 )
