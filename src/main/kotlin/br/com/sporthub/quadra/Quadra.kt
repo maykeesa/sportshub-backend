@@ -20,5 +20,14 @@ data class Quadra(
     var estabelecimento: Estabelecimento,
 
     @OneToMany(mappedBy = "quadra", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonManagedReference
     var horarios: List<Horario>
-)
+) {
+    override fun toString(): String {
+        return "Quadra(" +
+                "id=$id, " +
+                "capacidade=$capacidade, " +
+                "estabelecimento=$estabelecimento, " +
+                "horarios=$horarios)"
+    }
+}

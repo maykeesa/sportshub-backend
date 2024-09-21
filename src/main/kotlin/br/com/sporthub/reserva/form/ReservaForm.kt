@@ -7,11 +7,11 @@ import java.time.LocalDate
 
 data class ReservaForm(
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var dataReserva: LocalDate,
+    var dataReserva: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var ativa: Boolean,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var horario: Horario,
+    var horarioId: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var usuario: Usuario
-    )
+    var usuarioId: String
+)

@@ -54,7 +54,7 @@ class QuadraController {
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(quadraForm.estabelecimentoId))
 
         if(estabelecimentoOpt.isEmpty){
-            return ResponseEntity.status(404).body(mapOf("error" to "Estabelecimento não existe."))
+            return ResponseEntity.status(404).body(mapOf("error" to "Estabelecimento não encontrado/existe."))
         }
 
         quadra.estabelecimento = estabelecimentoOpt.get()

@@ -31,6 +31,7 @@ class Usuario(
     @ManyToMany(mappedBy = "usuarios")
     @JsonBackReference
     var grupos: List<Grupo> = ArrayList()
+
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
@@ -64,7 +65,8 @@ class Usuario(
     override fun isEnabled(): Boolean {
         return true // Indica se o usuário está ativo
     }
-
+    
+){
     override fun toString(): String {
         return "Usuario(id=$id, " +
                 "cpf='$cpf', " +

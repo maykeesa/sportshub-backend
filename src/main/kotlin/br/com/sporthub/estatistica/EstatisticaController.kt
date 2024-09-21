@@ -58,11 +58,11 @@ class EstatisticaController {
         val grupoOpt = this.grupoRep.findById(UUID.fromString(estatisticaForm.grupoId))
 
         if (usuarioOpt.isEmpty){
-            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não existe."))
+            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
         }
 
         if (grupoOpt.isEmpty){
-            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não existe."))
+            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
         }
 
         estatistica.usuario = usuarioOpt.get()

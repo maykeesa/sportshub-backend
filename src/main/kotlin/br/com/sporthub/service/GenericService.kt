@@ -1,15 +1,14 @@
 package br.com.sporthub.service
 
-import br.com.sporthub.usuario.Usuario
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.transaction.Transactional
-import java.util.UUID
+import java.util.*
 
 open class GenericService<T: Any>(private val entityType: Class<T>) {
 
     @PersistenceContext
-    private lateinit var entityManager: EntityManager
+    lateinit var entityManager: EntityManager
 
     @Transactional
     open fun atualizarEntidade(entidade: Any, form: Map<String, Any>): Any {
