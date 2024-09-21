@@ -1,9 +1,8 @@
-package br.com.sporthub.auth
+package br.com.sporthub.config.security.auth.dto
 
-import com.example.auth.domain.user.UserRole
 import java.time.LocalDate
 
-class RegisterDto(
+data class RegisterDto(
     var nome: String,
     var cpf: String,
     var email: String,
@@ -11,5 +10,4 @@ class RegisterDto(
     var dataNascimento: LocalDate,
     var genero: String,
     var telefone: String,
-) {
-}
+)

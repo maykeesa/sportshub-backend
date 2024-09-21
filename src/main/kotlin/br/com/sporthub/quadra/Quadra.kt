@@ -21,6 +21,4 @@ data class Quadra(
 
     @OneToMany(mappedBy = "quadra", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var horarios: List<Horario>
-) {
-
-}
+)

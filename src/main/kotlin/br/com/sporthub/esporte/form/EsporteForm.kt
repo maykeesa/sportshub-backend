@@ -9,6 +9,4 @@ data class EsporteForm(
     var time: Boolean,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var dupla: Boolean
-) {
-
-}
+)

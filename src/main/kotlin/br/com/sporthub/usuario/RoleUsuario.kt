@@ -1,4 +1,4 @@
-package com.example.auth.domain.user
+package br.com.sporthub.usuario
 
 enum class UserRole(val role: String) {
     ADMIN("admin"),

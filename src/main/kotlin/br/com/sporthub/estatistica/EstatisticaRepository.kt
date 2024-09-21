@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface EstatisticaRepository: JpaRepository<Estatistica, UUID> {
-}
+interface EstatisticaRepository: JpaRepository<Estatistica, UUID>

@@ -17,5 +17,4 @@ data class Horario(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quadra_id")
-    var quadra: Quadra) {
-}
+    var quadra: Quadra)

@@ -15,5 +15,4 @@ data class HorarioForm(
     var diaSemana: Int,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var quadra: Quadra
-) {
-}
+)

@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface HorarioRepository : JpaRepository<Horario, UUID>{
-}
+interface HorarioRepository : JpaRepository<Horario, UUID>

@@ -7,6 +7,4 @@ data class QuadraForm(
     var capacidade: Int,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var estabelecimentoId: String
-) {
-
-}
+)

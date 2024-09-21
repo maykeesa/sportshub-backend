@@ -1,7 +1,6 @@
-
 package br.com.sporthub.usuario
+
 import br.com.sporthub.grupo.Grupo
-import com.example.auth.domain.user.UserRole
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -11,9 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-
-
-
 
 @Entity
 @Table(name = "usuarios")
@@ -28,22 +24,21 @@ class Usuario(
     var dataNascimento: LocalDate,
     var genero: String,
     var telefone: String,
+    var role: UserRole,
     @CreationTimestamp
     var dataCriacao: LocalDateTime,
-    var role: UserRole,
 
     @ManyToMany(mappedBy = "usuarios")
     @JsonBackReference
     var grupos: List<Grupo> = ArrayList()
 ) : UserDetails {
 
-    // Implementação dos métodos obrigatórios da interface UserDetails
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        if (this.role == UserRole.ADMIN) {
+        if (this.role.equals(UserRole.ADMIN)) {
             return listOf(SimpleGrantedAuthority("ROLE_ADMIN"), SimpleGrantedAuthority("ROLE_USER"))
-        } else {
-            return listOf(SimpleGrantedAuthority("ROLE_USER"))
         }
+
+        return listOf(SimpleGrantedAuthority("ROLE_USER"))
     }
 
     override fun getPassword(): String {

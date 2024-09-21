@@ -14,5 +14,4 @@ data class ReservaForm(
     var horario: Horario,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var usuario: Usuario
-    ){
-}
+    )

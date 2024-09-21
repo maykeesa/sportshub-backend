@@ -1,4 +1,4 @@
-package br.com.sporthub.auth
+package br.com.sporthub.config.security
 
 import br.com.sporthub.usuario.UsuarioRepository
 import jakarta.servlet.FilterChain
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-public class securityfilter : OncePerRequestFilter() {
+class SecurityFilter : OncePerRequestFilter() {
 
     @Autowired
     private lateinit var tokenService: TokenService
@@ -19,30 +19,33 @@ public class securityfilter : OncePerRequestFilter() {
     @Autowired
     private lateinit var usuarioRepository: UsuarioRepository
 
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        var token = getToken(request)
-        if (!token.isEmpty()) {
-            val email = tokenService.validateToken(token)
-            val user = usuarioRepository.findByEmail(email)
+        val token = getToken(request)
+
+        if (token.isNotEmpty()) {
+            val email: String = tokenService.validateToken(token)
+
+            val usuarioOpt = usuarioRepository.findByEmail(email)
+            val user = if(usuarioOpt.isPresent) usuarioOpt.get() else null
             var authentication = UsernamePasswordAuthenticationToken(user, null, user?.authorities ?: listOf())
             SecurityContextHolder.getContext().authentication = authentication
-
         }
+
+        println("chegou")
         filterChain.doFilter(request, response)
-
-
     }
 
     private fun getToken(request: HttpServletRequest): String {
-        val token = request.getHeader("Authorization")
-        if (token == null || token.isBlank() || !token.startsWith("Bearer ")) {
-            return ""
+        val token: String? = request.getHeader("Authorization")
+
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7, token.length)
         }
-        return token.substring(7, token.length)
+
+        return ""
     }
 }
