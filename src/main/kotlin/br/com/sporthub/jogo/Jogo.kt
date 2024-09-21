@@ -15,5 +15,4 @@ class Jogo(
     @JoinColumn(name = "torneio_id", nullable = false)
     var torneio: Torneio
 
-) {
-}
+)

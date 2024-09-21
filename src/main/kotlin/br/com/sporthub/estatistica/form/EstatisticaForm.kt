@@ -16,5 +16,4 @@ data class EstatisticaForm(
     var grupoId: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var usuarioId: String
-) {
-}
+)

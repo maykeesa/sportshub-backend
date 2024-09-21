@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface EsporteRepository : JpaRepository<Esporte,UUID>{
-}
+interface EsporteRepository : JpaRepository<Esporte,UUID>

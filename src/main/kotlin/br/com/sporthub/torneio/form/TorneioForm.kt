@@ -14,5 +14,4 @@ data class TorneioForm(
     var descricao: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var grupo: Grupo
-) {
-}
+)

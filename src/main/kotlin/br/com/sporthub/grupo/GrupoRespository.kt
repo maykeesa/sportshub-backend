@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface GrupoRespository : JpaRepository<Grupo, UUID>{
-}
+interface GrupoRespository : JpaRepository<Grupo, UUID>

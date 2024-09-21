@@ -12,6 +12,4 @@ data class Esporte(
     var nome: String,
     var time: Boolean,
     var dupla: Boolean,
-) {
-
-}
+)

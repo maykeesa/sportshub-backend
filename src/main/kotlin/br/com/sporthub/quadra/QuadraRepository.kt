@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface QuadraRepository : JpaRepository<Quadra, UUID> {
-}
+interface QuadraRepository : JpaRepository<Quadra, UUID>
