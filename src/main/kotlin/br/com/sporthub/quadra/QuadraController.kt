@@ -86,4 +86,18 @@ class QuadraController {
         quadraRep.delete(quadraOpt.get())
         return ResponseEntity.ok().build()
     }
+
+    @GetMapping("/estabelecimento/{id}")
+    fun getQuadrasByEstabelecimento(@PathVariable id: String): ResponseEntity<List<QuadraDto>> {
+        val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
+
+        if (estabelecimentoOpt.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val quadras: List<Quadra> = this.quadraRep.findByEstabelecimento_Id(estabelecimentoOpt.get().id)
+        val quadrasDto: List<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra) }
+
+        return ResponseEntity.ok(quadrasDto)
+    }
 }
