@@ -22,7 +22,7 @@ open class GenericService<T: Any>(private val entityType: Class<T>) {
         return entidade
     }
 
-    open fun transformarListIdToEntity(ids: ArrayList<String>): ArrayList<Any>{
+    open fun transformarListIdToEntity(ids: List<String>): ArrayList<Any>{
         val entidades: ArrayList<Any> = ArrayList()
 
         ids.forEach{ i ->

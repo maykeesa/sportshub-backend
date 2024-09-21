@@ -1,5 +1,6 @@
 package br.com.sporthub.quadra
 
+import br.com.sporthub.esporte.Esporte
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.horario.Horario
 import com.fasterxml.jackson.annotation.JsonManagedReference
@@ -13,6 +14,19 @@ data class Quadra(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,
     var capacidade: Int,
+    var nota : Double,
+    var descricao : String,
+    var valorHora : Double,
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "quadra_esporte",
+        joinColumns = [JoinColumn(name = "quadra_id")],
+        inverseJoinColumns = [JoinColumn(name = "esporte_id")]
+    )
+    @JsonManagedReference
+    var esportes: List<Esporte>,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estabelecimento_id")
@@ -27,7 +41,8 @@ data class Quadra(
         return "Quadra(" +
                 "id=$id, " +
                 "capacidade=$capacidade, " +
-                "estabelecimento=$estabelecimento, " +
+                "nota=$nota, descricao='$descricao', " +
+                "valorHora=$valorHora, esportes=$esportes, " +
                 "horarios=$horarios)"
     }
 }
