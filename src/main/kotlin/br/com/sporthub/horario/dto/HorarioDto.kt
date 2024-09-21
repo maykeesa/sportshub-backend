@@ -10,7 +10,7 @@ data class HorarioDto(
     var horarioFim: LocalTime,
     var duracao: LocalTime,
     var diaSemana: Int,
-    var quadra: UUID
+    var quadra: UUID?
 ) {
     constructor(horario: Horario): this(
         id = horario.id,

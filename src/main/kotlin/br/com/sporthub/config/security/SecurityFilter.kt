@@ -35,7 +35,6 @@ class SecurityFilter : OncePerRequestFilter() {
             SecurityContextHolder.getContext().authentication = authentication
         }
 
-        println("chegou")
         filterChain.doFilter(request, response)
     }
 

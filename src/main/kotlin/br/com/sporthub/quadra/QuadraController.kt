@@ -17,6 +17,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/quadra")
@@ -55,6 +56,7 @@ class QuadraController {
     @PostMapping
     fun save(@RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Any> {
         val mapper = UtilsService.getGenericModelMapper()
+
         var quadra = mapper.map(quadraForm, Quadra::class.java)
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(quadraForm.estabelecimentoId))
         val esportes: List<Esporte> = this.esporteService.getListEsportes(quadraForm.esportes)
@@ -65,7 +67,8 @@ class QuadraController {
 
         quadra.estabelecimento = estabelecimentoOpt.get()
         quadra.esportes = esportes
-        println(quadra.toString())
+        quadra.horarios = ArrayList()
+        quadra.id = null
 
         quadra = this.quadraRep.save(quadra)
 

@@ -39,7 +39,7 @@ class SecurityConfigurations {
                     // Mapeamento rotas auth
                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/registerAdmin").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/auth/registerAdmin").permitAll()
 
                     // Mapeamento rotas de esporte
 //                    .requestMatchers(HttpMethod.GET, "/esporte").hasAnyRole()
