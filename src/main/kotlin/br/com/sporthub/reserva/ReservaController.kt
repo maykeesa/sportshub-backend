@@ -2,6 +2,9 @@ package br.com.sporthub.reserva
 
 import br.com.sporthub.horario.Horario
 import br.com.sporthub.horario.HorarioRepository
+import br.com.sporthub.quadra.Quadra
+import br.com.sporthub.quadra.QuadraRepository
+import br.com.sporthub.reserva.dto.ReservaDto
 import br.com.sporthub.reserva.form.ReservaForm
 import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.Usuario
@@ -18,6 +21,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.collections.List
 
 @RestController
 @RequestMapping("/reserva")
@@ -25,12 +29,15 @@ class ReservaController {
 
     @Autowired
     private lateinit var reservaService: ReservaService
+
     @Autowired
     private lateinit var reservaRep: ReservaRepository
     @Autowired
     private lateinit var horarioRep: HorarioRepository
     @Autowired
     private lateinit var usuarioRep: UsuarioRepository
+    @Autowired
+    private lateinit var quadraRep: QuadraRepository
 
     @GetMapping
     @Operation(summary = "Listar todas as reservas")
@@ -60,6 +67,25 @@ class ReservaController {
         }
 
         return  ResponseEntity.notFound().build()
+    }
+
+    @GetMapping("/quadra/{id}")
+    @Operation(summary = "Buscar uma reserva pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma reserva"),
+        ApiResponse(responseCode = "404", description = "Reserva não encontrado")
+    ])
+    fun getReservasByQuadra(@PathVariable id: String): ResponseEntity<Any> {
+        val quadraOpt = this.quadraRep.findById(UUID.fromString(id))
+
+        if(quadraOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Quadra não encontrado/existe."))
+        }
+
+        val reservas: List<Reserva> = this.reservaRep.findReservasByQuadraId(UUID.fromString(id))
+        val reservasDto: List<ReservaDto> = reservas.map { reserva -> ReservaDto(reserva) }
+
+        return ResponseEntity.ok(reservasDto)
     }
 
     @PostMapping

@@ -13,6 +13,7 @@ class EsporteDto(
 ) {
     constructor(esporte: Esporte): this(
         id = esporte.id,
-        nome = esporte.nome
+        nome = esporte.nome,
+
     )
 }

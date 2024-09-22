@@ -77,11 +77,11 @@ class SecurityConfigurations {
 //                    .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasAnyRole()
 
                     // Mapeamento rotas de reserva
-//                    .requestMatchers(HttpMethod.GET, "/reserva").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/reserva/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/reserva").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/reserva/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/reserva/**").hasAnyRole()
+//                    .requestMatchers(HttpMethod.GET, "/reserva").permitAll()
+//                    .requestMatchers(HttpMethod.GET, "/reserva/**").permitAll()
+//                    .requestMatchers(HttpMethod.POST, "/reserva").permitAll()
+//                    .requestMatchers(HttpMethod.PUT, "/reserva/**").hasRole("ADMIN")
+//                    .requestMatchers(HttpMethod.DELETE, "/reserva/**").hasRole("ADMIN")
 
                     // Mapeamento rotas de torneio
 //                    .requestMatchers(HttpMethod.GET, "/torneio").hasAnyRole()

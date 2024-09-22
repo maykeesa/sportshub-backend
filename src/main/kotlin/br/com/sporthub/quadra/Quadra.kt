@@ -14,6 +14,8 @@ data class Quadra(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID?,
+    var nome: String,
+    var imageUrl: String,
     var capacidade: Int,
     var nota : Double,
     var descricao : String,

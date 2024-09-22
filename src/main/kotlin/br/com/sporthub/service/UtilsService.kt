@@ -18,17 +18,17 @@ class UtilsService {
         }
 
         fun dataHoraStringToLocalDateTime(data: String, hora: String): LocalDateTime {
-            val formato = DateTimeFormatter.ofPattern("dd-MM-yyy HH:mm:ss")
+            val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             return LocalDateTime.parse("$data $hora", formato)
         }
 
         fun dataHoraStringToLocalDateTime(dataHora: String): LocalDateTime {
-            val formato = DateTimeFormatter.ofPattern("dd-MM-yyy HH:mm:ss")
+            val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             return LocalDateTime.parse(dataHora, formato)
         }
 
         fun dataStringToLocalDate(data: String): LocalDate {
-            val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             return LocalDate.parse(data, formato)
 
         }

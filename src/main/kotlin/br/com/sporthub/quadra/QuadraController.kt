@@ -7,6 +7,7 @@ import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.quadra.dto.QuadraDto
 import br.com.sporthub.quadra.form.QuadraForm
+import br.com.sporthub.reserva.ReservaRepository
 import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,13 +27,16 @@ class QuadraController {
     @Autowired
     private lateinit var quadraService: QuadraService
     @Autowired
+    private lateinit var esporteService: EsporteService
+
+    @Autowired
     private lateinit var quadraRep: QuadraRepository
     @Autowired
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
     @Autowired
-    private lateinit var esporteRep: EsporteRepository
-    @Autowired
-    private lateinit var esporteService: EsporteService
+    private lateinit var reservaRep: ReservaRepository
+
+    /*
 
     @GetMapping
     fun getAll(@PageableDefault(sort = arrayOf("id"), direction = Sort.Direction.ASC,
@@ -41,6 +45,15 @@ class QuadraController {
         val quadrasDtoPage: Page<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra) }
 
         return ResponseEntity.ok(quadrasDtoPage)
+    }
+     */
+
+    @GetMapping
+    fun getAll(): ResponseEntity<List<QuadraDto>> {
+        val quadras: List<Quadra> = this.quadraRep.findAll()
+        val quadrasDto: List<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra, false) }
+
+        return ResponseEntity.ok(quadrasDto)
     }
 
     @GetMapping("/{id}")
@@ -51,6 +64,20 @@ class QuadraController {
             return ResponseEntity.ok(QuadraDto(quadra.get()))
         }
         return ResponseEntity.notFound().build()
+    }
+
+    @GetMapping("/estabelecimento/{id}")
+    fun getQuadrasByEstabelecimento(@PathVariable id: String): ResponseEntity<List<QuadraDto>> {
+        val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
+
+        if (estabelecimentoOpt.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val quadras: List<Quadra> = this.quadraRep.findByEstabelecimento_Id(estabelecimentoOpt.get().id)
+        val quadrasDto: List<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra) }
+
+        return ResponseEntity.ok(quadrasDto)
     }
 
     @PostMapping
@@ -89,6 +116,7 @@ class QuadraController {
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Any> {
+        print("salvesalve ")
         val quadraOpt: Optional<Quadra> = quadraRep.findById(UUID.fromString(id))
 
         if (quadraOpt.isEmpty) {
@@ -97,19 +125,5 @@ class QuadraController {
 
         quadraRep.delete(quadraOpt.get())
         return ResponseEntity.ok().build()
-    }
-
-    @GetMapping("/estabelecimento/{id}")
-    fun getQuadrasByEstabelecimento(@PathVariable id: String): ResponseEntity<List<QuadraDto>> {
-        val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
-
-        if (estabelecimentoOpt.isEmpty) {
-            return ResponseEntity.notFound().build()
-        }
-
-        val quadras: List<Quadra> = this.quadraRep.findByEstabelecimento_Id(estabelecimentoOpt.get().id)
-        val quadrasDto: List<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra) }
-
-        return ResponseEntity.ok(quadrasDto)
     }
 }

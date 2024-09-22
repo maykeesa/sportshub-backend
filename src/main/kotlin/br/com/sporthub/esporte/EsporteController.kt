@@ -1,5 +1,6 @@
 package br.com.sporthub.esporte
 
+import br.com.sporthub.esporte.dto.EsporteDto
 import br.com.sporthub.esporte.form.EsporteForm
 import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
@@ -26,10 +27,12 @@ class EsporteController {
     @GetMapping
     fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<Page<Esporte>> {
+    ): ResponseEntity<Page<EsporteDto>> {
         val esporte: Page<Esporte> = this.esporteRep.findAll(paginacao)
 
-        return ResponseEntity.ok(esporte)
+        val esporteDto: Page<EsporteDto> = esporte.map { esporte -> EsporteDto(esporte) }
+
+        return ResponseEntity.ok(esporteDto)
     }
 
     @GetMapping("/{id}")
@@ -45,6 +48,8 @@ class EsporteController {
 
     @PostMapping
     fun save(@RequestBody @Valid esporteForm: EsporteForm): ResponseEntity<Esporte> {
+        print(esporteForm)
+
         val mapper = UtilsService.getGenericModelMapper()
         val esporte: Esporte = this.esporteRep.save(mapper.map(esporteForm, Esporte::class.java))
 
