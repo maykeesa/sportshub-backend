@@ -11,4 +11,5 @@ class EsporteService : GenericService<Esporte>(Esporte::class.java){
         val esportes: ArrayList<Esporte> = ArrayList(esportesAny.map { it as Esporte })
         return esportes
     }
+
 }

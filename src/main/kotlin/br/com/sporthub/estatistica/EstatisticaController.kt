@@ -75,7 +75,6 @@ class EstatisticaController {
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: String, @RequestBody estatisticaForm: Map<String, Any>): ResponseEntity<Any> {
-        println(estatisticaForm)
         val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
         if (estatisticaOpt.isEmpty) {

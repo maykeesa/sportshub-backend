@@ -34,27 +34,13 @@ class AuthController {
 
     @PostMapping("/login")
     fun login(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
-
-        // printa o email e a senha
-        println(authForm.email)
-        println(authForm.senha)
-
         val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
-        println(usernamePassword)
         val auth = authManager.authenticate(usernamePassword)
-        println(auth)
-
         val token = tokenService.generateToken(auth.principal as Usuario)
-        println(token)
 
-        //pega o usuário autenticado
         val usuario = auth.principal as Usuario
-        println(usuario)
 
-        //retorna o token e o usuário
         return ResponseEntity.ok(mapOf("token" to token, "usuario" to UsuarioDto(usuario)))
-
-
     }
 
     @PostMapping("/register")
