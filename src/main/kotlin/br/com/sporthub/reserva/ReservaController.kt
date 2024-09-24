@@ -151,4 +151,23 @@ class ReservaController {
         this.reservaRep.deleteById(UUID.fromString(id))
         return ResponseEntity.ok().build()
     }
+
+    @GetMapping("/usuario/{id}")
+    @Operation(summary = "Buscar uma reserva pelo ID do usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma reserva"),
+        ApiResponse(responseCode = "404", description = "Reserva não encontrado")
+    ])
+    fun getReservasByUsuario(@PathVariable id: String): ResponseEntity<Any> {
+        val usuarioOpt = this.usuarioRep.findById(UUID.fromString(id))
+
+        if(usuarioOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
+        }
+
+        val reservas: List<Reserva> = this.reservaRep.findReservasByUsuarioId(UUID.fromString(id))
+        val reservasDto: List<ReservaDto> = reservas.map { reserva -> ReservaDto(reserva) }
+
+        return ResponseEntity.ok(reservasDto)
+    }
 }
