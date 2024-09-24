@@ -22,11 +22,11 @@ open class GenericService<T: Any>(private val entityType: Class<T>) {
         return entidade
     }
 
-    open fun transformarListIdToEntity(ids: List<String>): ArrayList<Any>{
+    open fun transformarListIdToEntity(ids: List<*>): ArrayList<Any>{
         val entidades: ArrayList<Any> = ArrayList()
 
         ids.forEach{ i ->
-            entidades.add(this.entityManager.find(entityType, UUID.fromString(i)))
+            entidades.add(this.entityManager.find(entityType, UUID.fromString(i.toString())))
         }
 
         return entidades

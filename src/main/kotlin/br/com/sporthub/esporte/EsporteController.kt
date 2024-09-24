@@ -48,8 +48,6 @@ class EsporteController {
 
     @PostMapping
     fun save(@RequestBody @Valid esporteForm: EsporteForm): ResponseEntity<Esporte> {
-        print(esporteForm)
-
         val mapper = UtilsService.getGenericModelMapper()
         val esporte: Esporte = this.esporteRep.save(mapper.map(esporteForm, Esporte::class.java))
 

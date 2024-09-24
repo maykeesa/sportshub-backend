@@ -28,7 +28,7 @@ data class Quadra(
         inverseJoinColumns = [JoinColumn(name = "esporte_id")]
     )
     @JsonManagedReference
-    var esportes: List<Esporte> = ArrayList(),
+    var esportes: MutableList<Esporte> = ArrayList(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estabelecimento_id")

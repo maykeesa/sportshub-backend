@@ -1,24 +1,17 @@
 package br.com.sporthub.quadra
 
 import br.com.sporthub.esporte.Esporte
-import br.com.sporthub.esporte.EsporteRepository
 import br.com.sporthub.esporte.EsporteService
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.quadra.dto.QuadraDto
 import br.com.sporthub.quadra.form.QuadraForm
-import br.com.sporthub.reserva.ReservaRepository
 import br.com.sporthub.service.UtilsService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/quadra")
@@ -33,8 +26,6 @@ class QuadraController {
     private lateinit var quadraRep: QuadraRepository
     @Autowired
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
-    @Autowired
-    private lateinit var reservaRep: ReservaRepository
 
     /*
 
@@ -86,7 +77,7 @@ class QuadraController {
 
         var quadra = mapper.map(quadraForm, Quadra::class.java)
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(quadraForm.estabelecimentoId))
-        val esportes: List<Esporte> = this.esporteService.getListEsportes(quadraForm.esportes)
+        val esportes: MutableList<Esporte> = this.esporteService.getListEsportes(quadraForm.esportes)
 
         if(estabelecimentoOpt.isEmpty){
             return ResponseEntity.status(404).body(mapOf("error" to "Estabelecimento não encontrado/existe."))
@@ -100,6 +91,21 @@ class QuadraController {
         quadra = this.quadraRep.save(quadra)
 
         return ResponseEntity.status(201).body(QuadraDto(quadra, false))
+    }
+
+    @PutMapping("/{id}/esporte/modify")
+    fun modifyEsporte(@PathVariable id: String, @RequestBody quadraForm: Map<String, Any>,
+                      @RequestParam modificacao: String): ResponseEntity<Any> {
+
+        val quadraOpt: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
+
+        if (quadraOpt.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val quadraPersistida: Quadra = this.quadraService.modifyEsportesInQuadra(quadraOpt.get(), quadraForm, modificacao)
+
+        return ResponseEntity.status(202).body(QuadraDto(quadraPersistida, false))
     }
 
     @PutMapping("/{id}")
@@ -116,7 +122,6 @@ class QuadraController {
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Any> {
-        print("salvesalve ")
         val quadraOpt: Optional<Quadra> = quadraRep.findById(UUID.fromString(id))
 
         if (quadraOpt.isEmpty) {
