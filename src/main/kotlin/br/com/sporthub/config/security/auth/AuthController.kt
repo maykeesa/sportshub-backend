@@ -8,6 +8,9 @@ import br.com.sporthub.usuario.UsuarioRepository
 import br.com.sporthub.usuario.UserRole
 import br.com.sporthub.usuario.dto.UsuarioDto
 import br.com.sporthub.usuario.form.UsuarioForm
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -33,6 +36,11 @@ class AuthController {
     private lateinit var tokenService: TokenService
 
     @PostMapping("/login")
+    @Operation(summary = "Realizar login")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
+        ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    ])
     fun login(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
         val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
         val auth = authManager.authenticate(usernamePassword)
@@ -44,6 +52,11 @@ class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Registrar um usuário")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
+        ApiResponse(responseCode = "422", description = "Email já cadastrado")
+    ])
     fun register(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
         val usuarioOpt: Optional<Usuario> = this.usuarioRepository.findByEmail(usuarioForm.email)
 
@@ -64,6 +77,11 @@ class AuthController {
     }
 
     @PostMapping("/registerAdmin")
+    @Operation(summary = "Registrar um administrador")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Administrador registrado com sucesso"),
+        ApiResponse(responseCode = "422", description = "Email já cadastrado")
+    ])
     fun registerAdmin(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
         val usuarioOpt = this.usuarioRepository.findByEmail(usuarioForm.email)
 

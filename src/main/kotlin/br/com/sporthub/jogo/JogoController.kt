@@ -30,6 +30,11 @@ class JogoController {
     private lateinit var jogoRepository: JogoRepository
 
     @GetMapping
+    @Operation(summary = "Listar todos os jogos")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de jogos"),
+        ApiResponse(responseCode = "204", description = "Não há jogos cadastrados")
+    ])
     fun getAll(@PageableDefault(sort = ["torneio"], direction = Sort.Direction.DESC,
         page = 0, size = 10) paginacao: Pageable
     ): ResponseEntity<Page<Jogo>> {
@@ -39,6 +44,11 @@ class JogoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um jogo pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna um jogo"),
+        ApiResponse(responseCode = "404", description = "Jogo não encontrado")
+    ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any> {
         val jogo: Optional<Jogo> = this.jogoRepository.findById(UUID.fromString(id))
 
@@ -50,6 +60,10 @@ class JogoController {
     }
 
     @PostMapping
+    @Operation(summary = "Salvar um jogo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Jogo salvo com sucesso")
+    ])
     fun save(@RequestBody @Valid jogoForm: JogoForm): ResponseEntity<Jogo> {
         val jogo: Jogo = this.jogoRepository.save(ModelMapper().map(jogoForm, Jogo::class.java))
 
@@ -58,6 +72,11 @@ class JogoController {
 
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um jogo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o jogo atualizado"),
+        ApiResponse(responseCode = "404", description = "Jogo não encontrado")
+    ])
     fun update(@PathVariable id: String, @RequestBody jogoForm: Map<String,Any>): ResponseEntity<Any> {
         val jogoOpt: Optional<Jogo> = this.jogoRepository.findById(UUID.fromString(id))
 
@@ -70,6 +89,11 @@ class JogoController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um jogo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "204", description = "Jogo deletado com sucesso"),
+        ApiResponse(responseCode = "404", description = "Jogo não encontrado")
+    ])
     fun delete(@PathVariable id: String): ResponseEntity<Void> {
         val reservaOpt: Optional<Jogo> = this.jogoRepository.findById(UUID.fromString(id))
 

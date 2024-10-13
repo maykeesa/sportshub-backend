@@ -4,6 +4,9 @@ import br.com.sporthub.estabelecimento.dto.EstabelecimentoDto
 import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
 import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.service.UtilsService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +28,11 @@ class EstabelecimentoController {
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
 
     @GetMapping
+    @Operation(summary = "Listar todos os estabelecimentos")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de estabelecimentos"),
+        ApiResponse(responseCode = "204", description = "Não há estabelecimentos cadastrados")
+    ])
     fun getAll(@PageableDefault(sort = ["nome"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<EstabelecimentoDto>> {
         val estabelecimentosPage: Page<Estabelecimento> = this.estabelecimentoRep.findAll(paginacao)
@@ -35,6 +43,11 @@ class EstabelecimentoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um estabelecimento pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna um estabelecimento"),
+        ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any>{
         val estabelecimento: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
@@ -46,6 +59,11 @@ class EstabelecimentoController {
     }
 
     @PostMapping
+    @Operation(summary = "Salvar um estabelecimento")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Estabelecimento salvo com sucesso"),
+        ApiResponse(responseCode = "400", description = "Erro na requisição")
+    ])
     fun save(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<EstabelecimentoDto>{
         val mapper = UtilsService.getGenericModelMapper()
         val estabelecimento: Estabelecimento = this.estabelecimentoRep.save(mapper.map(estabelecimentoForm, Estabelecimento::class.java))
@@ -54,6 +72,11 @@ class EstabelecimentoController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um estabelecimento")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna o estabelecimento atualizado"),
+        ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    ])
     fun update(@PathVariable id: String, @RequestBody @Valid estabelecimentoForm: Map<String, Any>): ResponseEntity<Any>{
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
@@ -66,6 +89,11 @@ class EstabelecimentoController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um estabelecimento")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "204", description = "Estabelecimento deletado com sucesso"),
+        ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    ])
     fun delete(@PathVariable id: String): ResponseEntity<Void>{
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 

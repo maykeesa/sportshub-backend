@@ -7,6 +7,9 @@ import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.quadra.dto.QuadraDto
 import br.com.sporthub.quadra.form.QuadraForm
 import br.com.sporthub.service.UtilsService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -40,6 +43,11 @@ class QuadraController {
      */
 
     @GetMapping
+    @Operation(summary = "Listar todas as quadras")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de quadras"),
+        ApiResponse(responseCode = "204", description = "Não há quadras cadastradas")
+    ])
     fun getAll(): ResponseEntity<List<QuadraDto>> {
         val quadras: List<Quadra> = this.quadraRep.findAll()
         val quadrasDto: List<QuadraDto> = quadras.map { quadra -> QuadraDto(quadra, false) }
@@ -48,6 +56,11 @@ class QuadraController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar uma quadra pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma quadra"),
+        ApiResponse(responseCode = "404", description = "Quadra não encontrada")
+    ])
     fun getOne(@PathVariable id: String): ResponseEntity<QuadraDto> {
         val quadra: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
 
@@ -58,6 +71,11 @@ class QuadraController {
     }
 
     @GetMapping("/estabelecimento/{id}")
+    @Operation(summary = "Buscar todas as quadras de um estabelecimento")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de quadras"),
+        ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    ])
     fun getQuadrasByEstabelecimento(@PathVariable id: String): ResponseEntity<List<QuadraDto>> {
         val estabelecimentoOpt: Optional<Estabelecimento> = this.estabelecimentoRep.findById(UUID.fromString(id))
 
@@ -72,6 +90,11 @@ class QuadraController {
     }
 
     @PostMapping
+    @Operation(summary = "Salvar uma quadra")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Quadra salva com sucesso"),
+        ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado/existe")
+    ])
     fun save(@RequestBody @Valid quadraForm: QuadraForm): ResponseEntity<Any> {
         val mapper = UtilsService.getGenericModelMapper()
 
@@ -94,6 +117,11 @@ class QuadraController {
     }
 
     @PutMapping("/{id}/esporte/modify")
+    @Operation(summary = "Modificar os esportes de uma quadra")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "202", description = "Retorna a quadra com os esportes modificados"),
+        ApiResponse(responseCode = "404", description = "Quadra não encontrada")
+    ])
     fun modifyEsporte(@PathVariable id: String, @RequestBody quadraForm: Map<String, Any>,
                       @RequestParam modificacao: String): ResponseEntity<Any> {
 
@@ -109,6 +137,11 @@ class QuadraController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar uma quadra")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "202", description = "Retorna a quadra atualizada"),
+        ApiResponse(responseCode = "404", description = "Quadra não encontrada")
+    ])
     fun update(@PathVariable id: String, @RequestBody quadraForm: Map<String, Any>): ResponseEntity<Any> {
         val quadraOpt: Optional<Quadra> = this.quadraRep.findById(UUID.fromString(id))
 
@@ -121,6 +154,11 @@ class QuadraController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar uma quadra")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "204", description = "Quadra deletada com sucesso"),
+        ApiResponse(responseCode = "404", description = "Quadra não encontrada")
+    ])
     fun delete(@PathVariable id: String): ResponseEntity<Any> {
         val quadraOpt: Optional<Quadra> = quadraRep.findById(UUID.fromString(id))
 

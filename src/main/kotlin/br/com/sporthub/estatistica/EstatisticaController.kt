@@ -4,6 +4,9 @@ import br.com.sporthub.estatistica.form.EstatisticaForm
 import br.com.sporthub.grupo.GrupoRespository
 import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.UsuarioRepository
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -29,6 +32,11 @@ class EstatisticaController {
     private lateinit var usuarioRep: UsuarioRepository
 
     @GetMapping
+    @Operation(summary = "Listar todas as estatísticas")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma lista de estatísticas"),
+        ApiResponse(responseCode = "204", description = "Não há estatísticas cadastradas")
+    ])
     fun getAll(@PageableDefault(sort = ["id"], direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<Estatistica>> {
         val estatisticas: Page<Estatistica> = this.estatisticaRep.findAll(paginacao)
@@ -37,6 +45,11 @@ class EstatisticaController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar uma estatística pelo ID")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma estatística"),
+        ApiResponse(responseCode = "404", description = "Estatística não encontrada")
+    ])
     fun getOne(@PathVariable id: String): ResponseEntity<Any> {
         val estatistica: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
@@ -48,6 +61,11 @@ class EstatisticaController {
     }
 
     @PostMapping
+    @Operation(summary = "Salvar uma estatística")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Estatística salva com sucesso"),
+        ApiResponse(responseCode = "404", description = "Usuário ou Grupo não encontrado/existe")
+    ])
     fun save(@RequestBody @Valid estatisticaForm: EstatisticaForm): ResponseEntity<Any> {
         val mapper = UtilsService.getGenericModelMapper()
 
@@ -74,6 +92,11 @@ class EstatisticaController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar uma estatística")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "202", description = "Retorna a estatística atualizada"),
+        ApiResponse(responseCode = "404", description = "Estatística não encontrada")
+    ])
     fun update(@PathVariable id: String, @RequestBody estatisticaForm: Map<String, Any>): ResponseEntity<Any> {
         val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
@@ -86,6 +109,11 @@ class EstatisticaController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar uma estatística")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Estatística deletada com sucesso"),
+        ApiResponse(responseCode = "404", description = "Estatística não encontrada")
+    ])
     fun delete(@PathVariable id: String): ResponseEntity<Estatistica> {
         val estatisticaOpt: Optional<Estatistica> = this.estatisticaRep.findById(UUID.fromString(id))
 
