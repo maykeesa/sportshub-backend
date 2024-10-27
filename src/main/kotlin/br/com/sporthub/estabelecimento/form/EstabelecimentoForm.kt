@@ -19,5 +19,8 @@ data class EstabelecimentoForm(
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var cep: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var descricao: String
+    var descricao: String,
+
+    @NotBlank(message = "O campo senha não pode ser vazio ou nulo.")
+    var senha: String  // Novo campo para capturar a senha no formulário
 )

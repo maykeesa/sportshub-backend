@@ -2,6 +2,10 @@ package br.com.sporthub.config.security.auth
 
 import br.com.sporthub.config.security.TokenService
 import br.com.sporthub.config.security.auth.form.AuthForm
+import br.com.sporthub.estabelecimento.Estabelecimento
+import br.com.sporthub.estabelecimento.EstabelecimentoRepository
+import br.com.sporthub.estabelecimento.dto.EstabelecimentoDto
+import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
 import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.Usuario
 import br.com.sporthub.usuario.UsuarioRepository
@@ -26,25 +30,41 @@ class AuthController {
 
     @Autowired
     private lateinit var authManager: AuthenticationManager
+
     @Autowired
-    private lateinit var usuarioRepository : UsuarioRepository
+    private lateinit var usuarioRepository: UsuarioRepository
+
+    @Autowired
+    private lateinit var estabelecimentoRepository: EstabelecimentoRepository
 
     @Autowired
     private lateinit var tokenService: TokenService
 
-    @PostMapping("/login")
-    fun login(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
+    // Login para Usuário
+    @PostMapping("/loginUsuario")
+    fun loginUsuario(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
         val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
         val auth = authManager.authenticate(usernamePassword)
-        val token = tokenService.generateToken(auth.principal as Usuario)
-
         val usuario = auth.principal as Usuario
+        val token = tokenService.generateToken(usuario)
 
         return ResponseEntity.ok(mapOf("token" to token, "usuario" to UsuarioDto(usuario)))
     }
 
-    @PostMapping("/register")
-    fun register(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
+    // Login para Estabelecimento
+    @PostMapping("/loginEstabelecimento")
+    fun loginEstabelecimento(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
+        val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
+        val auth = authManager.authenticate(usernamePassword)
+        val estabelecimento = auth.principal as Estabelecimento
+        val token = tokenService.generateToken(estabelecimento)
+
+        return ResponseEntity.ok(mapOf("token" to token, "estabelecimento" to EstabelecimentoDto(estabelecimento)))
+    }
+
+    // Registro de Usuário
+    @PostMapping("/registerUsuario")
+    fun registerUsuario(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
         val usuarioOpt: Optional<Usuario> = this.usuarioRepository.findByEmail(usuarioForm.email)
 
         if (usuarioOpt.isPresent) {
@@ -61,6 +81,27 @@ class AuthController {
         val usuarioPersistido: Usuario = this.usuarioRepository.save(usuario)
 
         return ResponseEntity.status(201).body(UsuarioDto(usuarioPersistido))
+    }
+
+    // Registro de Estabelecimento
+    @PostMapping("/registerEstabelecimento")
+    fun registerEstabelecimento(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Any> {
+        val estabelecimentoOpt = this.estabelecimentoRepository.findByEmail(estabelecimentoForm.email)
+
+        if (estabelecimentoOpt.isPresent) {
+            return ResponseEntity.status(422).body(mapOf("warn" to "Email já cadastrado."))
+        }
+
+        val encryptedPassword = BCryptPasswordEncoder().encode(estabelecimentoForm.senha)
+        estabelecimentoForm.senha = encryptedPassword
+
+        val mapper = UtilsService.getGenericModelMapper()
+        val estabelecimento: Estabelecimento = mapper.map(estabelecimentoForm, Estabelecimento::class.java)
+        estabelecimento.role = UserRole.ESTABLISHMENT
+
+        val estabelecimentoPersistido: Estabelecimento = this.estabelecimentoRepository.save(estabelecimento)
+
+        return ResponseEntity.status(201).body(EstabelecimentoDto(estabelecimentoPersistido))
     }
 
     @PostMapping("/registerAdmin")
@@ -82,5 +123,4 @@ class AuthController {
 
         return ResponseEntity.status(201).body(UsuarioDto(usuarioPersistido))
     }
-
 }
