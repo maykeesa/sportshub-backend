@@ -1,4 +1,4 @@
-package br.com.sporthub.config.security.auth.dto
+package br.com.sporthub.auth.dto
 
 import java.time.LocalDate
 

@@ -1,27 +1,32 @@
 package br.com.sporthub.config.security
 
-import br.com.sporthub.usuario.Usuario
+import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.usuario.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
-class AuthorizationService: UserDetailsService {
+class   AuthorizationService: UserDetailsService {
 
     @Autowired
     private lateinit var usuarioRepository: UsuarioRepository
+    @Autowired
+    private lateinit var estabelecimentoRepository: EstabelecimentoRepository
 
-    override fun loadUserByUsername(email: String): UserDetails {
-        val usuarioOpt: Optional<Usuario> = usuarioRepository.findByEmail(email)
-
+    override fun loadUserByUsername(email: String): UserDetails? {
+        val usuarioOpt = usuarioRepository.findByEmail(email)
         if (usuarioOpt.isPresent) {
             return usuarioOpt.get()
         }
 
-        throw UsernameNotFoundException("Usuário não encontrado.")
+        val estabelecimentoOpt = estabelecimentoRepository.findByEmail(email)
+        if (estabelecimentoOpt.isPresent) {
+            return estabelecimentoOpt.get()
+        }
+
+        throw UsernameNotFoundException("Usuário ou Estabelecimento não encontrado.")
     }
 }

@@ -1,4 +1,4 @@
-package br.com.sporthub.config.security.auth.form
+package br.com.sporthub.auth.form
 
 data class AuthForm(
     var email: String,

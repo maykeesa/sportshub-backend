@@ -10,6 +10,8 @@ data class EstabelecimentoForm(
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     @Email(message = "O Email não é válido.")
     var email: String,
+    @NotBlank(message = "O campo senha não pode ser vazio ou nulo.")
+    var senha: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var cnpj: String,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")

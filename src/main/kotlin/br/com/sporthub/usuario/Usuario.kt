@@ -25,20 +25,16 @@ class Usuario(
     var genero: String,
     var telefone: String,
     var role: UserRole,
-    @CreationTimestamp
-    var dataCriacao: LocalDateTime,
 
     @ManyToMany(mappedBy = "usuarios")
     @JsonBackReference
-    var grupos: List<Grupo> = ArrayList()
+    var grupos: List<Grupo> = ArrayList(),
 
+    @CreationTimestamp
+    var dataCriacao: LocalDateTime
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        if (this.role.equals(UserRole.ADMIN)) {
-            return listOf(SimpleGrantedAuthority("ROLE_ADMIN"), SimpleGrantedAuthority("ROLE_USER"))
-        }
-
         return listOf(SimpleGrantedAuthority("ROLE_USER"))
     }
 
@@ -51,19 +47,19 @@ class Usuario(
     }
 
     override fun isAccountNonExpired(): Boolean {
-        return true // Indica se a conta está expirada
+        return true
     }
 
     override fun isAccountNonLocked(): Boolean {
-        return true // Indica se a conta está bloqueada
+        return true
     }
 
     override fun isCredentialsNonExpired(): Boolean {
-        return true // Indica se as credenciais (senha) estão expiradas
+        return true
     }
 
     override fun isEnabled(): Boolean {
-        return true // Indica se o usuário está ativo
+        return true
     }
 
     override fun toString(): String {

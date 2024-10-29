@@ -1,5 +1,6 @@
 package br.com.sporthub.config.security
 
+import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.usuario.UsuarioRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -17,7 +18,10 @@ class SecurityFilter : OncePerRequestFilter() {
     private lateinit var tokenService: TokenService
 
     @Autowired
-    private lateinit var usuarioRepository: UsuarioRepository
+    private lateinit var usuarioRep: UsuarioRepository
+
+    @Autowired
+    private lateinit var estabelecimentoRep: EstabelecimentoRepository
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -27,11 +31,21 @@ class SecurityFilter : OncePerRequestFilter() {
         val token = getToken(request)
 
         if (token.isNotEmpty()) {
+            var user: Any?
             val email: String = tokenService.validateToken(token)
 
-            val usuarioOpt = usuarioRepository.findByEmail(email)
-            val user = if(usuarioOpt.isPresent) usuarioOpt.get() else null
-            var authentication = UsernamePasswordAuthenticationToken(user, null, user?.authorities ?: listOf())
+            var authentication: UsernamePasswordAuthenticationToken? = null
+
+            if(this.usuarioRep.findByEmail(email).isPresent){
+                user = this.usuarioRep.findByEmail(email).get()
+                authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
+            }
+
+            if(this.estabelecimentoRep.findByEmail(email).isPresent){
+                user = this.estabelecimentoRep.findByEmail(email).get()
+                authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
+            }
+
             SecurityContextHolder.getContext().authentication = authentication
         }
 
