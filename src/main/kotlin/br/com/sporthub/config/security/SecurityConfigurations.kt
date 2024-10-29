@@ -16,12 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+
 @Configuration
 @EnableWebSecurity
 class SecurityConfigurations {
 
     @Autowired
-    private lateinit var securityfilter: SecurityFilter
+    private lateinit var securityFilter: SecurityFilter
 
     @Bean
     fun securityFilterChain(http: HttpSecurity, jogoService: JogoService, horarioService: HorarioService): SecurityFilterChain {
@@ -30,90 +31,89 @@ class SecurityConfigurations {
             .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorize ->
                 authorize
+                    // Rotas públicas
                     .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/doc/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/webjars/**").permitAll()
 
-                    // Mapeamento rotas auth
-                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/registerAdmin").permitAll()
+                    // Rotas de autenticação e registro
+                    .requestMatchers(HttpMethod.POST, "/auth/login/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/register/**").permitAll()
 
-                    // Mapeamento rotas de esporte
-//                    .requestMatchers(HttpMethod.GET, "/esporte").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/esporte/**").hasAnyRole()
-                    .requestMatchers(HttpMethod.POST, "/esporte").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/esporte/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/esporte/**").hasRole("ADMIN")
+                    // Rotas de esporte (estabelecimentos podem criar/modificar, usuários podem visualizar)
+                    .requestMatchers(HttpMethod.GET, "/esporte/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/esporte").hasAnyRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/esporte/**").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/esporte/**").hasRole("ESTABLISHMENT")
 
-                    // Mapeamento rotas de estabelecimento
-//                    .requestMatchers(HttpMethod.GET, "/estabelecimento").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/estabelecimento/**").hasAnyRole()
-                    .requestMatchers(HttpMethod.POST, "/estabelecimento").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/estabelecimento/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/estabelecimento/**").hasRole("ADMIN")
+                    // Rotas de estabelecimento (apenas estabelecimentos podem modificar suas informações)
+                    .requestMatchers(HttpMethod.GET, "/estabelecimento/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/estabelecimento").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/estabelecimento/**").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/estabelecimento/**").hasRole("ESTABLISHMENT")
 
-                    // Mapeamento rotas de grupo
-//                    .requestMatchers(HttpMethod.GET, "/grupo").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/grupo/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/grupo").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/grupo/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/grupo/**").hasAnyRole()
+                    // Rotas de grupo (usuários e estabelecimentos podem acessar e modificar)
+                    .requestMatchers(HttpMethod.GET, "/grupo").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.GET, "/grupo/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.POST, "/grupo").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/grupo/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/grupo/**").hasAnyRole("USER", "ESTABLISHMENT")
 
-                    // Mapeamento rotas de quadra
-//                    .requestMatchers(HttpMethod.GET, "/quadra").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/quadra/**").hasAnyRole()
-                    .requestMatchers(HttpMethod.POST, "/quadra").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/quadra/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/quadra/**").hasRole("ADMIN")
+                    // Rotas de quadra (somente estabelecimentos podem modificar, usuários podem visualizar)
+                    .requestMatchers(HttpMethod.GET, "/quadra").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/quadra/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/quadra").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/quadra/**").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/quadra/**").hasRole("ESTABLISHMENT")
 
-                    // Mapeamento rotas de usuario
-//                    .requestMatchers(HttpMethod.GET, "/usuario").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/usuario/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/usuario").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/usuario/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasAnyRole()
+                    // Rotas de usuario (Usuários e Estabelecimentos podem ver e modificar seus próprios perfis)
+                    .requestMatchers(HttpMethod.GET, "/usuario").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.GET, "/usuario/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/usuario/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasAnyRole("USER", "ESTABLISHMENT")
 
-                    // Mapeamento rotas de reserva
-//                    .requestMatchers(HttpMethod.GET, "/reserva").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/reserva/**").permitAll()
-//                    .requestMatchers(HttpMethod.POST, "/reserva").permitAll()
-//                    .requestMatchers(HttpMethod.PUT, "/reserva/**").hasRole("ADMIN")
-//                    .requestMatchers(HttpMethod.DELETE, "/reserva/**").hasRole("ADMIN")
+                    // Rotas de reserva (acesso público para criar reservas, estabelecimentos podem editar)
+                    .requestMatchers(HttpMethod.GET, "/reserva").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.GET, "/reserva/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.POST, "/reserva").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/reserva/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/reserva/**").hasAnyRole("USER", "ESTABLISHMENT")
 
-                    // Mapeamento rotas de torneio
-//                    .requestMatchers(HttpMethod.GET, "/torneio").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/torneio/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/torneio").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/torneio/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/torneio/**").hasAnyRole()
+                    // Rotas de torneio (usuários e estabelecimentos podem acessar e modificar)
+                    .requestMatchers(HttpMethod.GET, "/torneio").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.GET, "/torneio/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.POST, "/torneio").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/torneio/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/torneio/**").hasAnyRole("USER", "ESTABLISHMENT")
 
-                    // Mapeamento rotas de jogo
-//                    .requestMatchers(HttpMethod.GET, "/jogo").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/jogo/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/jogo").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/jogo/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/jogo/**").hasAnyRole()
+                    // Rotas de jogo (usuários e estabelecimentos podem acessar e modificar)
+                    .requestMatchers(HttpMethod.GET, "/jogo").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.GET, "/jogo/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.POST, "/jogo").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/jogo/**").hasAnyRole("USER", "ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/jogo/**").hasAnyRole("USER", "ESTABLISHMENT")
 
-                    // Mapeamento horario
-//                    .requestMatchers(HttpMethod.GET, "/horario").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/horario/**").hasAnyRole()
-                    .requestMatchers(HttpMethod.POST, "/horario").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/horario/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/horario/**").hasRole("ADMIN")
+                    // Rotas de horário (apenas estabelecimentos podem modificar, usuários podem visualizar)
+                    .requestMatchers(HttpMethod.GET, "/horario").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/horario/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/horario").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.PUT, "/horario/**").hasRole("ESTABLISHMENT")
+                    .requestMatchers(HttpMethod.DELETE, "/horario/**").hasRole("ESTABLISHMENT")
 
-                    // Mapeamento rotas de estatistica
-//                    .requestMatchers(HttpMethod.GET, "/estatistica").hasAnyRole()
-//                    .requestMatchers(HttpMethod.GET, "/estatistica/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.POST, "/estatistica").hasAnyRole()
-//                    .requestMatchers(HttpMethod.PUT, "/estatistica/**").hasAnyRole()
-//                    .requestMatchers(HttpMethod.DELETE, "/estatistica/**").hasAnyRole()
-                    .anyRequest()
-                    .authenticated()
+                    // Rotas de estatística (usuários e estabelecimentos podem acessar e modificar)
+                    .requestMatchers(HttpMethod.GET, "/estatistica").hasAnyRole("USER")
+                    .requestMatchers(HttpMethod.GET, "/estatistica/**").hasAnyRole("USER")
+                    .requestMatchers(HttpMethod.POST, "/estatistica").hasAnyRole("USER")
+                    .requestMatchers(HttpMethod.PUT, "/estatistica/**").hasAnyRole("USER")
+                    .requestMatchers(HttpMethod.DELETE, "/estatistica/**").hasAnyRole("USER")
+
+                    // Qualquer outra requisição precisa estar autenticada
+                    .anyRequest().authenticated()
             }
-            .addFilterBefore(securityfilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
+
         return http.build()
     }
 

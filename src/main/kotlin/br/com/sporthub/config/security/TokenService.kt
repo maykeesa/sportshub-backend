@@ -1,9 +1,9 @@
 package br.com.sporthub.config.security
 
-import br.com.sporthub.usuario.Usuario
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.time.Instant
 
@@ -13,20 +13,14 @@ class TokenService {
     @Value("\$sportshub.security.secret}")
     private lateinit var secret: String
 
-    fun generateToken(usuario: Usuario): String {
-        try {
-            val algorithm: Algorithm = Algorithm.HMAC256(secret)
-
-            return JWT.create()
-                .withIssuer("auth0")
-                .withClaim("id", usuario.id.toString())
-                .withClaim("email", usuario.email)
-                .withClaim("nome", usuario.nome)
-                .sign(algorithm)
-
-        } catch (ex: Exception) {
-            throw Exception("Erro ao gerar token.")
-        }
+    fun generateToken(user: UserDetails): String {
+        val algorithm: Algorithm = Algorithm.HMAC256(secret)
+        val email = user.username
+        
+        return JWT.create()
+            .withIssuer("auth0")
+            .withClaim("email", email)
+            .sign(algorithm)
     }
 
     fun validateToken(token: String): String {
