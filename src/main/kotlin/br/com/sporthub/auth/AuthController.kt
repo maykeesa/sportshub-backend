@@ -1,7 +1,7 @@
-package br.com.sporthub.config.security.auth
+package br.com.sporthub.auth
 
 import br.com.sporthub.config.security.TokenService
-import br.com.sporthub.config.security.auth.form.AuthForm
+import br.com.sporthub.auth.form.AuthForm
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.estabelecimento.EstabelecimentoRepository
 import br.com.sporthub.estabelecimento.dto.EstabelecimentoDto
@@ -30,18 +30,14 @@ class AuthController {
 
     @Autowired
     private lateinit var authManager: AuthenticationManager
-
     @Autowired
     private lateinit var usuarioRepository: UsuarioRepository
-
     @Autowired
     private lateinit var estabelecimentoRepository: EstabelecimentoRepository
-
     @Autowired
     private lateinit var tokenService: TokenService
 
-    // Login para Usuário
-    @PostMapping("/loginUsuario")
+    @PostMapping("/login/usuario")
     fun loginUsuario(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
         val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
         val auth = authManager.authenticate(usernamePassword)
@@ -51,8 +47,7 @@ class AuthController {
         return ResponseEntity.ok(mapOf("token" to token, "usuario" to UsuarioDto(usuario)))
     }
 
-    // Login para Estabelecimento
-    @PostMapping("/loginEstabelecimento")
+    @PostMapping("/login/estabelecimento")
     fun loginEstabelecimento(@RequestBody @Valid authForm: AuthForm): ResponseEntity<Any> {
         val usernamePassword = UsernamePasswordAuthenticationToken(authForm.email, authForm.senha)
         val auth = authManager.authenticate(usernamePassword)
@@ -62,8 +57,7 @@ class AuthController {
         return ResponseEntity.ok(mapOf("token" to token, "estabelecimento" to EstabelecimentoDto(estabelecimento)))
     }
 
-    // Registro de Usuário
-    @PostMapping("/registerUsuario")
+    @PostMapping("/register/usuario")
     fun registerUsuario(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
         val usuarioOpt: Optional<Usuario> = this.usuarioRepository.findByEmail(usuarioForm.email)
 
@@ -83,8 +77,7 @@ class AuthController {
         return ResponseEntity.status(201).body(UsuarioDto(usuarioPersistido))
     }
 
-    // Registro de Estabelecimento
-    @PostMapping("/registerEstabelecimento")
+    @PostMapping("/register/estabelecimento")
     fun registerEstabelecimento(@RequestBody @Valid estabelecimentoForm: EstabelecimentoForm): ResponseEntity<Any> {
         val estabelecimentoOpt = this.estabelecimentoRepository.findByEmail(estabelecimentoForm.email)
 
@@ -102,25 +95,5 @@ class AuthController {
         val estabelecimentoPersistido: Estabelecimento = this.estabelecimentoRepository.save(estabelecimento)
 
         return ResponseEntity.status(201).body(EstabelecimentoDto(estabelecimentoPersistido))
-    }
-
-    @PostMapping("/registerAdmin")
-    fun registerAdmin(@RequestBody @Valid usuarioForm: UsuarioForm): ResponseEntity<Any> {
-        val usuarioOpt = this.usuarioRepository.findByEmail(usuarioForm.email)
-
-        if (usuarioOpt.isPresent) {
-            return ResponseEntity.status(422).body(mapOf("warn" to "Email já cadastrado."))
-        }
-
-        val encryptedPassword = BCryptPasswordEncoder().encode(usuarioForm.senha)
-        usuarioForm.senha = encryptedPassword
-
-        val mapper = UtilsService.getGenericModelMapper()
-        val usuario: Usuario = mapper.map(usuarioForm, Usuario::class.java)
-        usuario.role = UserRole.ADMIN
-
-        val usuarioPersistido: Usuario = this.usuarioRepository.save(usuario)
-
-        return ResponseEntity.status(201).body(UsuarioDto(usuarioPersistido))
     }
 }

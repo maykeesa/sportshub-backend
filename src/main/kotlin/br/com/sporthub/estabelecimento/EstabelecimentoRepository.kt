@@ -6,5 +6,6 @@ import java.util.*
 
 @Repository
 interface EstabelecimentoRepository : JpaRepository<Estabelecimento, UUID> {
+
     fun findByEmail(email: String): Optional<Estabelecimento>
 }

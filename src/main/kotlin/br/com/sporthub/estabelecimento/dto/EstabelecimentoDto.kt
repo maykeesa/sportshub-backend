@@ -1,17 +1,16 @@
 package br.com.sporthub.estabelecimento.dto
 
 import br.com.sporthub.estabelecimento.Estabelecimento
-import br.com.sporthub.quadra.Quadra
 import br.com.sporthub.quadra.dto.QuadraDto
-import org.hibernate.annotations.CreationTimestamp
+import br.com.sporthub.usuario.UserRole
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class EstabelecimentoDto(
     var id: UUID,
     var nome: String,
     var email: String,
+    var role: UserRole,
     var cnpj: String,
     var contato: String,
     var endereco: String,
@@ -25,6 +24,7 @@ data class EstabelecimentoDto(
         id = estabelecimento.id,
         nome = estabelecimento.nome,
         email = estabelecimento.email,
+        role = estabelecimento.role,
         cnpj = estabelecimento.cnpj,
         contato = estabelecimento.contato,
         endereco = estabelecimento.endereco,

@@ -19,26 +19,28 @@ data class Estabelecimento(
     var id: UUID,
     var nome: String,
     var email: String,
+    var senha: String,
+    var role: UserRole,
     var cnpj: String,
     var contato: String,
     var endereco: String,
     var cep: String,
     var descricao: String,
-    var senha: String,  // Novo campo para armazenar a senha
-    var role: UserRole = UserRole.ESTABLISHMENT,
-    @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "estabelecimento", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JsonBackReference
     val quadras: List<Quadra>,
+
     @CreationTimestamp
     var dataCriacao: LocalDateTime
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        return listOf(SimpleGrantedAuthority(role.name))
+        return listOf(SimpleGrantedAuthority("ROLE_ESTABLISHMENT"))
     }
 
     override fun getPassword(): String {
-        return senha  // Agora retorna a senha corretamente
+        return senha
     }
 
     override fun getUsername(): String {

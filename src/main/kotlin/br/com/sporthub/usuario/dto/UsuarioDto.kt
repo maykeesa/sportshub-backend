@@ -12,11 +12,11 @@ data class UsuarioDto(
     var cpf: String,
     var nome: String,
     var email: String,
+    var roles: UserRole,
     var dataNascimento: LocalDate,
     var genero: String,
     var telefone: String,
     var grupos: List<UUID>,
-    var roles: UserRole,
     var dataCriacao: LocalDateTime
 ){
     constructor(usuario: Usuario): this(
@@ -24,10 +24,10 @@ data class UsuarioDto(
         cpf = usuario.cpf,
         nome = usuario.nome,
         email = usuario.email,
+        roles = usuario.role,
         dataNascimento = usuario.dataNascimento,
         genero = usuario.genero,
         telefone = usuario.telefone,
-        roles = usuario.role,
         grupos = if (usuario.grupos != null) usuario.grupos.map { it.id } else ArrayList(),
         dataCriacao = usuario.dataCriacao
     )
