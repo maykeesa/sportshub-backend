@@ -1,4 +1,4 @@
-package br.com.sporthub.usuario
+package br.com.sporthub.usuario.enums
 
 enum class UserRole(val role: String) {
     USER("user"),

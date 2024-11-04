@@ -1,6 +1,6 @@
 package br.com.sporthub.usuario.dto
 
-import br.com.sporthub.usuario.UserRole
+import br.com.sporthub.usuario.enums.UserRole
 import br.com.sporthub.usuario.Usuario
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -9,7 +9,7 @@ import br.com.sporthub.estabelecimento.form.EstabelecimentoForm
 import br.com.sporthub.service.UtilsService
 import br.com.sporthub.usuario.Usuario
 import br.com.sporthub.usuario.UsuarioRepository
-import br.com.sporthub.usuario.UserRole
+import br.com.sporthub.usuario.enums.UserRole
 import br.com.sporthub.usuario.dto.UsuarioDto
 import br.com.sporthub.usuario.form.UsuarioForm
 import jakarta.validation.Valid
