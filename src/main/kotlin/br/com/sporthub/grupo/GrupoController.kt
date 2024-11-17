@@ -84,15 +84,15 @@ class GrupoController {
         return ResponseEntity.status(201).body(GrupoDto(grupoPersistido))
     }
 
-    @PostMapping("/{id}/usuario/{idUsuario}")
+    @PostMapping("/{id}/usuario/{emailUsuario}")
     @Operation(summary = "Adicionar um usuário a um grupo")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna o grupo com o usuário adicionado"),
         ApiResponse(responseCode = "404", description = "Grupo ou usuário não encontrado")
     ])
-    fun addUsuario(@PathVariable id: String, @PathVariable idUsuario: String): ResponseEntity<Any>{
+    fun addUsuario(@PathVariable id: String, @PathVariable emailUsuario: String): ResponseEntity<Any>{
         val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(id))
-        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(idUsuario))
+        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findByEmail(emailUsuario)
 
         if (grupoOpt.isEmpty){
             return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
