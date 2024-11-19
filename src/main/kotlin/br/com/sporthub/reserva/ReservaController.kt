@@ -1,5 +1,8 @@
 package br.com.sporthub.reserva
 
+import br.com.sporthub.config.security.AuthorizationService
+import br.com.sporthub.grupo.Grupo
+import br.com.sporthub.grupo.GrupoRespository
 import br.com.sporthub.horario.Horario
 import br.com.sporthub.horario.HorarioRepository
 import br.com.sporthub.quadra.Quadra
@@ -28,6 +31,8 @@ import kotlin.collections.List
 class ReservaController {
 
     @Autowired
+    private lateinit var authService: AuthorizationService
+    @Autowired
     private lateinit var reservaService: ReservaService
 
     @Autowired
@@ -38,6 +43,8 @@ class ReservaController {
     private lateinit var usuarioRep: UsuarioRepository
     @Autowired
     private lateinit var quadraRep: QuadraRepository
+    @Autowired
+    private lateinit var grupoRep: GrupoRespository
 
     @GetMapping
     @Operation(summary = "Listar todas as reservas")
@@ -70,7 +77,7 @@ class ReservaController {
     }
 
     @GetMapping("/quadra/{id}")
-    @Operation(summary = "Buscar uma reserva pelo ID")
+    @Operation(summary = "Buscar uma reserva pela quadra")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Retorna uma reserva"),
         ApiResponse(responseCode = "404", description = "Reserva não encontrado")
@@ -88,6 +95,27 @@ class ReservaController {
         return ResponseEntity.ok(reservasDto)
     }
 
+    @GetMapping("/grupo/{id}")
+    @Operation(summary = "Buscar uma reserva pelo grupo")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retorna uma reserva"),
+        ApiResponse(responseCode = "404", description = "Reserva não encontrado")
+    ])
+    fun getReservasByGrupo(@PathVariable id: String): ResponseEntity<Any> {
+        val grupoOpt = this.grupoRep.findById(UUID.fromString(id))
+
+        if(grupoOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
+        }
+
+        println(id)
+        val reservas: List<Reserva> = this.reservaRep.findReservasByGrupoId(UUID.fromString(id))
+        println(reservas)
+        val reservasDto: List<ReservaDto> = reservas.map { reserva -> ReservaDto(reserva) }
+
+        return ResponseEntity.ok(reservasDto)
+    }
+
     @PostMapping
     @Operation(summary = "Salvar uma reserva")
     @ApiResponses(value = [
@@ -96,26 +124,29 @@ class ReservaController {
     ])
     fun save(@RequestBody @Valid reservaForm: ReservaForm): ResponseEntity<Any> {
         val mapper = UtilsService.getGenericModelMapper()
-
         val reserva = mapper.map(reservaForm, Reserva::class.java)
-        reserva.dataReserva = UtilsService.dataStringToLocalDate(reservaForm.dataReserva)
-        val horarioOpt: Optional<Horario> = this.horarioRep.findById(UUID.fromString(reservaForm.horarioId))
-        val usuarioOpt: Optional<Usuario> = this.usuarioRep.findById(UUID.fromString(reservaForm.usuarioId))
 
+        val horarioOpt: Optional<Horario> = this.horarioRep.findById(UUID.fromString(reservaForm.horarioId))
         if(horarioOpt.isEmpty){
             return ResponseEntity.status(404).body(mapOf("error" to "Horário não encontrado/existe."))
         }
 
-        if(usuarioOpt.isEmpty){
-            return ResponseEntity.status(404).body(mapOf("error" to "Usuário não encontrado/existe."))
+        if(reservaForm.grupoId != null){
+            val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(reservaForm.grupoId))
+
+            if(grupoOpt.isEmpty){
+                return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
+            }
+
+            reserva.grupo = grupoOpt.get()
         }
 
         reserva.horario = horarioOpt.get()
-        reserva.usuario = usuarioOpt.get()
-
+        reserva.usuario = this.authService.getUsuarioLogado() as Usuario
+        reserva.dataReserva = UtilsService.dataStringToLocalDate(reservaForm.dataReserva)
         val reservaPersistida: Reserva = this.reservaRep.save(reserva)
 
-        return ResponseEntity.status(201).body(reservaPersistida)
+        return ResponseEntity.status(201).body(ReservaDto(reservaPersistida))
     }
 
     @PutMapping("/{id}")

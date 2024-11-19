@@ -15,15 +15,15 @@ data class Torneio(
     var id: UUID,
     var nome: String,
     var descricao: String,
-    @CreationTimestamp
-    var dataCriacao: LocalDateTime,
 
     @ManyToOne
     @JoinColumn(name = "grupo_id")
     var grupo: Grupo,
 
     @OneToMany(mappedBy = "torneio", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val jogos: List<Jogo> = emptyList()
+    val jogos: List<Jogo> = ArrayList(),
 
+    @CreationTimestamp
+    var dataCriacao: LocalDateTime
 
 )

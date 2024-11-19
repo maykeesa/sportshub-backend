@@ -1,6 +1,7 @@
 package br.com.sporthub.usuario
 
 import br.com.sporthub.grupo.Grupo
+import br.com.sporthub.usuario.enums.UserRole
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -26,12 +27,13 @@ class Usuario(
     var telefone: String,
     var role: UserRole,
 
-    @ManyToMany(mappedBy = "usuarios")
+    @ManyToMany(mappedBy = "usuarios", fetch = FetchType.EAGER)
     @JsonBackReference
     var grupos: List<Grupo> = ArrayList(),
 
     @CreationTimestamp
     var dataCriacao: LocalDateTime
+
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {

@@ -12,6 +12,9 @@ interface ReservaRepository : JpaRepository<Reserva, UUID>{
     @Query("SELECT r FROM Reserva r WHERE r.horario.quadra.id = :quadraId AND r.dataReserva >= CURRENT_DATE")
     fun findReservasByQuadraId(@Param("quadraId") quadraId: UUID): List<Reserva>
 
+    @Query("SELECT r FROM Reserva r WHERE r.grupo.id = :grupoId AND r.dataReserva >= CURRENT_DATE")
+    fun findReservasByGrupoId(@Param("grupoId") grupoId: UUID): List<Reserva>
+
     @Query("SELECT r FROM Reserva r WHERE r.usuario.id = :usuarioId ORDER BY r.dataReserva")
     fun findReservasByUsuarioId(@Param("usuarioId") usuarioId: UUID): List<Reserva>
 

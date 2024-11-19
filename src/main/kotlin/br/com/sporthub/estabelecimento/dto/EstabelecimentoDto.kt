@@ -2,7 +2,7 @@ package br.com.sporthub.estabelecimento.dto
 
 import br.com.sporthub.estabelecimento.Estabelecimento
 import br.com.sporthub.quadra.dto.QuadraDto
-import br.com.sporthub.usuario.UserRole
+import br.com.sporthub.usuario.enums.UserRole
 import java.time.LocalDateTime
 import java.util.*
 

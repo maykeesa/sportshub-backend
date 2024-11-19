@@ -1,8 +1,11 @@
 package br.com.sporthub.torneio
 
+import br.com.sporthub.grupo.Grupo
+import br.com.sporthub.grupo.GrupoRespository
+import br.com.sporthub.service.UtilsService
+import br.com.sporthub.torneio.dto.TorneioDto
 import br.com.sporthub.torneio.form.TorneioForm
 import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -12,24 +15,26 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-
 @RestController
 @RequestMapping("/torneio")
 class TorneioController {
 
     @Autowired
-    private lateinit var torneioRep: TorneioRepository
+    private lateinit var torneioService: TorneioService
 
     @Autowired
-    private lateinit var torneioService: TorneioService
+    private lateinit var torneioRep: TorneioRepository
+    @Autowired
+    private lateinit var grupoRep: GrupoRespository
 
     @GetMapping
     fun getAll(@PageableDefault(sort = ["dataCriacao"], direction = Sort.Direction.DESC,
         page = 0, size = 10) paginacao: Pageable
-    ): ResponseEntity<Page<Torneio>> {
-        val torneios: Page<Torneio> = this.torneioRep.findAll(paginacao)
+    ): ResponseEntity<Page<TorneioDto>> {
+        val torneiosPage: Page<Torneio> = this.torneioRep.findAll(paginacao)
+        val torneiosDtoPage = torneiosPage.map { torneio -> TorneioDto(torneio) }
 
-        return ResponseEntity.ok(torneios)
+        return ResponseEntity.ok(torneiosDtoPage)
     }
 
     @GetMapping("/{id}")
@@ -44,10 +49,19 @@ class TorneioController {
     }
 
     @PostMapping
-    fun save(@RequestBody @Valid torneioForm: TorneioForm) : ResponseEntity<Torneio> {
-        val torneio: Torneio = this.torneioRep.save(ModelMapper().map(torneioForm, Torneio::class.java))
+    fun save(@RequestBody @Valid torneioForm: TorneioForm) : ResponseEntity<Any> {
+        val mapper = UtilsService.getGenericModelMapper()
+        val torneio: Torneio = mapper.map(torneioForm, Torneio::class.java)
+        val grupoOpt: Optional<Grupo> = this.grupoRep.findById(UUID.fromString(torneioForm.grupoId))
 
-        return ResponseEntity.status(201).body(torneio)
+        if(grupoOpt.isEmpty){
+            return ResponseEntity.status(404).body(mapOf("error" to "Grupo não encontrado/existe."))
+        }
+
+        torneio.grupo = grupoOpt.get()
+        val torneioPersistido = this.torneioRep.save(torneio)
+
+        return ResponseEntity.status(201).body(TorneioDto(torneioPersistido))
     }
 
     @PutMapping("/{id}")
@@ -59,7 +73,6 @@ class TorneioController {
         }
 
         val torneioAtualizado  = this.torneioService.atualizarEntidade(torneioOpt.get(),torneioForm)
-
         return ResponseEntity.status(202).body(torneioAtualizado)
     }
 

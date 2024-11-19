@@ -1,5 +1,6 @@
 package br.com.sporthub.grupo
 
+import br.com.sporthub.config.security.AuthorizationService
 import br.com.sporthub.grupo.dto.GrupoDto
 import br.com.sporthub.grupo.form.GrupoForm
 import br.com.sporthub.service.UtilsService
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -26,12 +28,14 @@ import kotlin.collections.ArrayList
 class GrupoController {
 
     @Autowired
-    private lateinit var grupoRep: GrupoRespository
-
+    private lateinit var authService: AuthorizationService
     @Autowired
     private lateinit var grupoService: GrupoService
     @Autowired
     private lateinit var usuarioService: UsuarioService
+
+    @Autowired
+    private lateinit var grupoRep: GrupoRespository
     @Autowired
     private lateinit var usuarioRep: UsuarioRepository
 
@@ -76,11 +80,14 @@ class GrupoController {
         val mapper = UtilsService.getGenericModelMapper()
         val grupo: Grupo = mapper.map(grupoForm, Grupo::class.java)
 
+        val usuarioLogado: Usuario = this.authService.getUsuarioLogado() as Usuario
+        grupoForm.usuarios.add(usuarioLogado.id.toString())
+
         val usuarios: ArrayList<Usuario> = this.usuarioService.getListUsuarios(grupoForm)
         grupo.usuarios = usuarios
+        grupo.usuarioCriador = usuarioLogado
 
         val grupoPersistido: Grupo = this.grupoRep.save(grupo)
-
         return ResponseEntity.status(201).body(GrupoDto(grupoPersistido))
     }
 

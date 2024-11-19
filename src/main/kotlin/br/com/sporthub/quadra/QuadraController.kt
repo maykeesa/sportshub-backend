@@ -28,7 +28,6 @@ class QuadraController {
     private lateinit var estabelecimentoRep: EstabelecimentoRepository
 
     /*
-
     @GetMapping
     fun getAll(@PageableDefault(sort = arrayOf("id"), direction = Sort.Direction.ASC,
         page = 0, size = 10) paginacao: Pageable): ResponseEntity<Page<QuadraDto>> {
@@ -39,6 +38,7 @@ class QuadraController {
     }
      */
 
+    //Foi feito assim porque não queriam paginação
     @GetMapping
     fun getAll(): ResponseEntity<List<QuadraDto>> {
         val quadras: List<Quadra> = this.quadraRep.findAll()

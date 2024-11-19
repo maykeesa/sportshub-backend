@@ -1,7 +1,7 @@
 package br.com.sporthub.estabelecimento
 
 import br.com.sporthub.quadra.Quadra
-import br.com.sporthub.usuario.UserRole
+import br.com.sporthub.usuario.enums.UserRole
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
