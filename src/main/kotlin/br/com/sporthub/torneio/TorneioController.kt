@@ -73,7 +73,6 @@ class TorneioController {
         }
 
         val torneioAtualizado  = this.torneioService.atualizarEntidade(torneioOpt.get(),torneioForm)
-
         return ResponseEntity.status(202).body(torneioAtualizado)
     }
 

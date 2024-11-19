@@ -1,9 +1,7 @@
 package br.com.sporthub.reserva.form
 
-import br.com.sporthub.horario.Horario
-import br.com.sporthub.usuario.Usuario
 import jakarta.validation.constraints.NotBlank
-import java.time.LocalDate
+import jakarta.validation.constraints.Null
 
 data class ReservaForm(
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
@@ -12,6 +10,6 @@ data class ReservaForm(
     var ativa: Boolean,
     @NotBlank(message = "O campo não pode ser vazio ou nulo.")
     var horarioId: String,
-    @NotBlank(message = "O campo não pode ser vazio ou nulo.")
-    var usuarioId: String
+    @Null
+    var grupoId: String?
 )

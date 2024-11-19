@@ -16,10 +16,15 @@ data class Grupo(
     var id: UUID,
     var nome: String,
     var descricao: String,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_criador_id", nullable = false)
+    var usuarioCriador: Usuario,
+
     @CreationTimestamp
     var dataCriacao: LocalDateTime,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_grupo",
         joinColumns = [JoinColumn(name = "grupo_id")],
         inverseJoinColumns = [JoinColumn(name = "usuario_id")]
@@ -34,6 +39,7 @@ data class Grupo(
         return "Grupo(id=$id, " +
                 "nome='$nome', " +
                 "descricao='$descricao', " +
+                "usuarioCriador='$usuarioCriador', " +
                 "dataCriacao=$dataCriacao, " +
                 "usuarios=${usuarios.map{ it.id }}, " +
                 "torneios=$torneios)"
